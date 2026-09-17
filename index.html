@@ -3,378 +3,106 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Clash Royal · 简化版</title>
+<title>Clash Royal · 简化版皇室战争</title>
 <style>
-  body{margin:0;background:#1b2735;display:flex;flex-direction:column;align-items:center;font-family:sans-serif;color:#fff;user-select:none;touch-action:manipulation}
-  h2{margin:8px 0 2px;font-size:20px}
-  #top{display:flex;gap:18px;font-size:15px;margin-bottom:4px;align-items:center}
-  #cv{background:#5a8;border:4px solid #244;border-radius:8px;max-width:96vw;height:auto}
-  #hand{display:flex;gap:8px;margin:8px 0 14px}
-  .card{width:78px;height:96px;background:linear-gradient(#4a6,#2a4a1a);border:2px solid #89a;border-radius:10px;text-align:center;cursor:pointer;font-size:12px;position:relative;transition:transform .1s}
-  .card.sel{transform:translateY(-8px);border-color:#ffd700;box-shadow:0 0 12px #ffd700}
-  .card.poor{filter:grayscale(.8) brightness(.6)}
-  .card .ic{font-size:32px;margin-top:12px}
-  .card .nm{margin-top:4px}
-  .card .cost{position:absolute;top:-8px;left:-8px;background:#b05dd8;border-radius:50%;width:24px;height:24px;line-height:24px;font-weight:bold;border:2px solid #fff}
-  .card .pb{position:absolute;bottom:0;left:0;right:0;height:6px;background:#0009;border-radius:0 0 8px 8px;overflow:hidden}
-  .card .pb i{display:block;height:100%;background:linear-gradient(90deg,#7ae,#5df)}
-  #tip{position:fixed;display:none;z-index:10;pointer-events:none;background:#18243acc;border:1px solid #6ad;border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.7;min-width:150px;backdrop-filter:blur(3px)}
-  #tip .th{font-size:14px;font-weight:bold;color:#ffd700;margin-bottom:4px}
-  #tip .tr{display:flex;justify-content:space-between;gap:16px}
-  #tip .tr b{color:#9cf;font-weight:normal}
-  #tip .sp{color:#fd8;margin-top:4px}
-  #next{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:#cde}
-  #next .ic{font-size:26px}
-  #msg{height:20px;font-size:15px;color:#ffd700;font-weight:bold}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#0d1420;color:#e8eef7;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  /* ---- Hero ---- */
+  .hero{position:relative;text-align:center;padding:90px 20px 110px;
+    background:radial-gradient(ellipse at 50% -20%,#2a4a8a 0%,#0d1420 60%),#0d1420}
+  .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:60px;
+    background:linear-gradient(#0d1420ee,transparent);pointer-events:none}
+  .crown{font-size:64px;filter:drop-shadow(0 6px 18px #ffd70066)}
+  h1{font-size:52px;margin:18px 0 10px;letter-spacing:2px;
+    background:linear-gradient(90deg,#ffd700,#ff9838,#ffd700);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tagline{font-size:19px;color:#9fb4d8;margin-bottom:36px}
+  .play{display:inline-block;padding:16px 54px;font-size:20px;font-weight:bold;border-radius:40px;
+    background:linear-gradient(135deg,#ffd700,#ff9838);color:#1a1200;
+    box-shadow:0 8px 28px #ff983855;transition:transform .15s,box-shadow .15s}
+  .play:hover{transform:translateY(-3px);box-shadow:0 12px 34px #ff983877}
+  .meta{margin-top:22px;font-size:14px;color:#7d92b8}
+  /* ---- 卡池 ---- */
+  section{max-width:960px;margin:0 auto;padding:56px 20px}
+  h2{font-size:28px;text-align:center;margin-bottom:8px}
+  .sub{text-align:center;color:#8ba0c6;margin-bottom:34px;font-size:15px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+  .card{background:#16233a;border:1px solid #27405f;border-radius:14px;padding:18px;
+    transition:transform .15s,border-color .15s}
+  .card:hover{transform:translateY(-4px);border-color:#ffd70088}
+  .card .ic{font-size:34px}
+  .card .nm{font-size:17px;font-weight:bold;margin:8px 0 4px}
+  .card .ds{font-size:13px;color:#9fb4d8;line-height:1.6}
+  .card .cost{float:right;color:#c98af0;font-weight:bold}
+  /* ---- 玩法 ---- */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .step{background:#16233a;border-radius:14px;padding:20px;border-left:3px solid #ffd700}
+  .step b{display:block;font-size:16px;margin:6px 0}
+  .step p{font-size:13px;color:#9fb4d8;line-height:1.7}
+  .step .n{color:#ffd700;font-weight:bold;font-size:13px}
+  /* ---- 特性 ---- */
+  .feat{display:flex;gap:12px;align-items:flex-start;padding:14px 0;font-size:14px;color:#c6d5ec;line-height:1.7}
+  .feat span{font-size:22px}
+  .cta{text-align:center;padding:70px 20px 90px;background:radial-gradient(ellipse at 50% 120%,#2a4a8a 0%,#0d1420 65%)}
+  .cta p{color:#9fb4d8;margin-bottom:26px;font-size:15px}
+  footer{text-align:center;padding:26px;color:#5d729a;font-size:13px;border-top:1px solid #1c2c45}
+  footer a:hover{color:#ffd700}
 </style>
 </head>
 <body>
-<h2>⚔️ Clash Royal 简化版 · 对战 AI</h2>
-<div id="top">
-  <span>⏱ <span id="timer">3:00</span></span>
-  <span>👑 你 <span id="cp">0</span></span>
-  <span>AI <span id="ce">0</span> 👑</span>
-  <span id="dexl" style="color:#e080ff"></span>
+<div class="hero">
+  <div class="crown">👑</div>
+  <h1>CLASH ROYAL</h1>
+  <div class="tagline">简化版皇室战争 · 固定 8 张卡牌 · 与 AI 实时对战</div>
+  <a class="play" href="game.html">▶ 开始游戏</a>
+  <div class="meta">⏱ 3 分钟一局 · 💧 圣水机制 · 🌉 双路过桥 · 零依赖,浏览器即开即玩</div>
 </div>
-<div id="msg">点击卡牌,再点击自己下半场部署!</div>
-<canvas id="cv" width="480" height="800"></canvas>
-<div id="hand"></div>
-<div id="tip"></div>
-<script>
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
-const W=480,H=800,RIVER_Y=H/2,RIVER_H=44,LX=[W*0.22,W*0.78];
-// ===== 卡牌定义(固定8张) =====
-const CARDS={
- knight:{name:'骑士',cost:3,icon:'🗡️',hp:600,dmg:75,rng:30,spd:45,hit:1.2,type:'ground'},
- archers:{name:'弓箭手',cost:3,icon:'🏹',hp:125,dmg:40,rng:120,spd:40,hit:1.2,type:'ground',n:2},
- giant:{name:'巨人',cost:5,icon:'🗿',hp:1800,dmg:110,rng:34,spd:30,hit:1.5,type:'ground',onlyTowers:true},
- minipekka:{name:'迷你皮卡',cost:4,icon:'⚔️',hp:550,dmg:290,rng:30,spd:60,hit:1.8,type:'ground'},
- musketeer:{name:'火枪手',cost:4,icon:'🔫',hp:300,dmg:80,rng:150,spd:40,hit:1.1,type:'ground'},
- skeletons:{name:'骷髅',cost:2,icon:'💀',hp:60,dmg:55,rng:26,spd:60,hit:1.0,type:'ground',n:3},
- cannon:{name:'加农炮',cost:3,icon:'🏰',hp:380,dmg:80,rng:140,spd:0,hit:1.4,type:'building',life:25},
- fireball:{name:'火球',cost:4,icon:'🔥',hp:1,dmg:300,radius:85,type:'spell'}
-};
-const DECK=['knight','archers','giant','minipekka','musketeer','skeletons','cannon','fireball'];
-// ===== 状态 =====
-let units=[],shots=[],fx=[];
-let elix={p:5,e:5},crowns={p:0,e:0},timer=180,over=false,started=false,winner='';
-let hand={p:[],e:[]},queue={p:[],e:[]},selCard=null;
-let towers=[];
-function newTower(side,x,y,king){return{isTower:true,side,x,y,king,hp:king?1600:900,maxHp:king?1600:900,dmg:king?80:55,rng:king?150:135,hit:1,cd:0,r:king?34:26};}
-function reset(){
- units=[];shots=[];fx=[];elix={p:5,e:5};crowns={p:0,e:0};timer=180;over=false;winner='';selCard=null;
- towers=[
-  newTower('e',W/2,64,true), newTower('e',LX[0],150), newTower('e',LX[1],150),
-  newTower('p',W/2,H-64,true), newTower('p',LX[0],H-150), newTower('p',LX[1],H-150)
- ];
- for(const s of ['p','e']){const d=shuffle([...DECK]);hand[s]=d.slice(0,4);queue[s]=d.slice(4);}
-}
-function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-// ===== UI =====
-// 卡牌悬浮提示 + 圣水充能(黑白→彩色)
-const tip=document.getElementById('tip');
-let hoverKey=null;
-const SPECIAL={giant:'只攻击建筑与塔,不会打小兵',skeletons:'一次部署 3 个小骷髅',archers:'一次部署 2 个远程单位',cannon:'防守建筑,持续掉血,25 秒后消失',fireball:'范围伤害,对塔只造成 40% 伤害',minipekka:'单体爆发伤害极高'};
-const SPD_NAME={0:'固定',30:'慢速',40:'中速',45:'中速',60:'快速'};
-function cardTipHtml(k){
- const d=CARDS[k];
- const rows=[['血量',d.type==='spell'?'—':d.hp],['伤害',d.dmg],['攻击速度',d.hit+' 秒/次'],
-  ['射程',d.type==='spell'?'全场':(d.rng>50?'远程':'近战')]];
- if(d.type!=='spell')rows.push(['移动速度',SPD_NAME[d.spd]||'中速']);
- return `<div class="th">${d.icon} ${d.name} <span style="color:#c9f">💧${d.cost}</span></div>`+
-  rows.map(r=>`<div class="tr"><b>${r[0]}</b><span>${r[1]}</span></div>`).join('')+
-  (SPECIAL[k]?`<div class="sp">✦ ${SPECIAL[k]}</div>`:'');
-}
-function showTip(el,k){
- tip.innerHTML=cardTipHtml(k);tip.style.display='block';
- const r=el.getBoundingClientRect();
- tip.style.left=Math.max(8,Math.min(innerWidth-170,r.left))+'px';
- tip.style.top=(r.top-tip.offsetHeight-10)+'px';
-}
-const handEl=document.getElementById('hand');
-function renderHand(){
- handEl.innerHTML='';
- const nx=document.createElement('div');nx.id='next';
- nx.innerHTML=`下一张<br><span class="ic">${CARDS[queue.p[0]].icon}</span>`;
- handEl.appendChild(nx);
- hand.p.forEach(k=>{
-  const d=CARDS[k],c=document.createElement('div');
-  c.className='card'+(selCard===k?' sel':'');
-  const p=Math.min(1,elix.p/d.cost); // 圣水充能进度:0=黑白 1=彩色
-  c.style.filter=`grayscale(${(1-p)*100}%) brightness(${.5+.5*p})`;
-  c.innerHTML=`<div class="cost">${d.cost}</div><div class="ic">${d.icon}</div><div class="nm">${d.name}</div><div class="pb"><i style="width:${p*100}%"></i></div>`;
-  c.onclick=()=>{selCard=(selCard===k)?null:k;renderHand();};
-  c.onmouseenter=()=>{hoverKey=k;showTip(c,k);};
-  c.onmouseleave=()=>{if(hoverKey===k){hoverKey=null;tip.style.display='none';}};
-  handEl.appendChild(c);
- });
- if(hoverKey){ // 手牌重渲染时保持提示可见
-  const el=[...handEl.querySelectorAll('.card')][hand.p.indexOf(hoverKey)];
-  if(el)showTip(el,hoverKey);else{hoverKey=null;tip.style.display='none';}
- }
-}
-const msg=document.getElementById('msg');
-function say(t){msg.textContent=t;}
-// ===== 部署 =====
-function deploy(side,k,x,y){
- const d=CARDS[k];
- if(d.type==='spell'){ // 火球从天而降
-  shots.push({spell:true,side,x,y0:side==='p'?H+30:-30,y:side==='p'?H+30:-30,tx:x,ty:y,t:0,dmg:d.dmg,radius:d.radius,spd:520});
- }else{
-  const n=d.n||1;
-  for(let i=0;i<n;i++)units.push({k,side,x:Math.max(24,Math.min(W-24,x+(i-(n-1)/2)*34)),y:Math.max(24,Math.min(H-24,y+(i-(n-1)/2)*10)),hp:d.hp,maxHp:d.hp,cd:0,life:d.life||0,born:0});
- }
- // 手牌循环
- const h=hand[side];const idx=h.indexOf(k);h.splice(idx,1);h.push(queue[side].shift());queue[side].push(k);
- if(side==='p'){selCard=null;renderHand();}
-}
-cv.addEventListener('pointerdown',e=>{
- const b=cv.getBoundingClientRect();
- const mx=(e.clientX-b.left)*W/b.width,my=(e.clientY-b.top)*H/b.height;
- if(over){reset();started=true;renderHand();say('新一轮开始!');return;}
- if(!started){started=true;say('战斗开始!');return;}
- if(!selCard)return;
- const d=CARDS[selCard];
- if(elix.p<d.cost){say('圣水不足!');return;}
- if(d.type!=='spell'&&my<RIVER_Y+RIVER_H/2+10){say('只能部署在自己半场!');return;}
- if(d.type!=='spell'&&d.type!=='building'&&(my<H/2)){say('只能部署在自己半场!');return;}
- elix.p-=d.cost;deploy('p',selCard,mx,Math.min(my,H-30));
-});
-// ===== AI =====
-let aiCd=1;
-function aiThink(dt){
- aiCd-=dt;if(aiCd>0||over)return;
- aiCd=1.2+Math.random();
- const eUnits=units.filter(u=>u.side==='e'),pUnits=units.filter(u=>u.side==='p');
- const affordable=hand.e.filter(k=>CARDS[k].cost<=elix.e);
- if(!affordable.length)return;
- const k=affordable[Math.floor(Math.random()*affordable.length)],d=CARDS[k];
- const threat=pUnits.filter(u=>CARDS[u.k].type!=='building'&&u.y<RIVER_Y+80);
- if(d.type==='spell'){
-  // 找玩家单位聚集点或残血塔
-  let best=null,bn=0;
-  for(const u of pUnits){const near=pUnits.filter(q=>Math.hypot(q.x-u.x,q.y-u.y)<70).length;if(near>bn){bn=near;best=u;}}
-  if(best&&bn>=3&&elix.e>=d.cost){elix.e-=d.cost;deploy('e',k,best.x,best.y);return;}
-  return;
- }
- if(threat.length&&d.type!=='building'){ // 防守:部署在威胁附近
-  const t=threat[0];elix.e-=d.cost;deploy('e',k,W/2+(t.x-W/2)*0.6,t.y-80);return;
- }
- if(d.type==='building'){ // 加农炮放王塔前
-  elix.e-=d.cost;deploy('e',k,W/2+(Math.random()<.5?-1:1)*40,H/2-130);return;
- }
- // 进攻:巨人沉底,其他下桥
- const lane=LX[Math.floor(Math.random()*2)];
- const y=k==='giant'?H-60:H/2-70;
- elix.e-=d.cost;deploy('e',k,lane+(Math.random()-.5)*40,y);
-}
-// ===== 逻辑 =====
-function liveTowers(side){return towers.filter(t=>t.side===side&&t.hp>0);}
-function nearestStruct(u){ // 最近的塔或建筑(巨人/无敌人时攻击)
- let best=null,bd=1e9;
- for(const t of liveTowers(u.side==='p'?'e':'p')){const d=Math.hypot(t.x-u.x,t.y-u.y);if(d<bd){bd=d;best=t;}}
- for(const b of units){if(b.side!==u.side&&b.hp>0&&CARDS[b.k].type==='building'){const d=Math.hypot(b.x-u.x,b.y-u.y);if(d<bd){bd=d;best=b;}}}
- return best;
-}
-function findTarget(u){
- if(CARDS[u.k].onlyTowers)return nearestStruct(u); // 巨人:三座塔 + 建筑
- const enemies=units.filter(q=>q.side!==u.side&&q.hp>0&&CARDS[q.k].type!=='building');
- let best=null,bd=170;for(const q of enemies){const d=Math.hypot(q.x-u.x,q.y-u.y);if(d<bd){bd=d;best=q;}}
- return best||nearestStruct(u);
-}
-function moveToward(u,tx,ty,spd,dt){
- const dx=tx-u.x,dy=ty-u.y,d=Math.hypot(dx,dy)||1;
- u.x+=dx/d*spd*dt;u.y+=dy/d*spd*dt;
-}
-function inRiver(u){return Math.abs(u.y-RIVER_Y)<RIVER_H/2&&Math.abs(u.x-LX[0])>34&&Math.abs(u.x-LX[1])>34;}
-function update(dt){
- if(!started||over)return;
- const rate=timer<=60?2:1;
- elix.p=Math.min(10,elix.p+dt/2.8*rate);
- elix.e=Math.min(10,elix.e+dt/2.8*rate);
- timer-=dt;if(timer<=0){endGame();return;}
- aiThink(dt);
- // 单位
- for(let i=units.length-1;i>=0;i--){const u=units[i],d=CARDS[u.k];
-  u.born+=dt;u.cd-=dt;if(u.atk>0)u.atk-=dt;if(u.flash>0)u.flash-=dt;
-  if(d.type==='building'){u.life-=dt;u.hp=Math.min(u.hp,d.hp*u.life/d.life);if(u.life<=0){units.splice(i,1);continue;}} // 建筑持续掉血
-  if(u.hp<=0){units.splice(i,1);continue;}
-  const tgt=findTarget(u);if(!tgt)continue;
-  const tr=tgt.r||14,dist=Math.hypot(tgt.x-u.x,tgt.y-u.y)-tr-14;
-  if(dist<=d.rng){ // 攻击
-   if(u.cd<=0){u.cd=d.hit;
-    if(d.rng>50){
-     const kind=u.k==='cannon'?'ball':u.k==='musketeer'?'bullet':'arrow';
-     shots.push({kind,x:u.x,y:u.y-14,tx:tgt.x,ty:tgt.y,tgt,side:u.side,dmg:d.dmg,spd:kind==='ball'?300:460});
-    }else{
-     const dd=Math.hypot(tgt.x-u.x,tgt.y-u.y)||1;
-     u.atk=.22;u.atkDx=(tgt.x-u.x)/dd;u.atkDy=(tgt.y-u.y)/dd;
-     hit(tgt,d.dmg);
-     fx.push({slash:.18,x:tgt.x,y:tgt.y,a:Math.atan2(tgt.y-u.y,tgt.x-u.x),c:u.side==='p'?'#cfe8ff':'#ffd0d0'});
-    }
-   }
-  }else if(d.spd>0){ // 寻路:未过河先走向最近的桥,过河后直线扑塔
-   const needsBridge=u.side==='p'?u.y>RIVER_Y-RIVER_H/2:u.y<RIVER_Y+RIVER_H/2;
-   if(needsBridge){
-    const bx=LX[Math.abs(u.x-LX[0])<Math.abs(u.x-LX[1])?0:1];
-    const bankY=u.side==='p'?RIVER_Y+RIVER_H:RIVER_Y-RIVER_H;
-    if(Math.abs(u.x-bx)>14)moveToward(u,bx,bankY,d.spd,dt);
-    else moveToward(u,bx,u.side==='p'?RIVER_Y-RIVER_H:RIVER_Y+RIVER_H,d.spd,dt);
-   }else moveToward(u,tgt.x,tgt.y,d.spd,dt);
-  }
- }
- // 塔攻击
- for(const t of towers){if(t.hp<=0)continue;t.cd-=dt;if(t.flash>0)t.flash-=dt;
-  if(t.cd<=0){let best=null,bd=t.rng;for(const u of units){if(u.side===t.side||u.hp<=0)continue;const dd=Math.hypot(u.x-t.x,u.y-t.y);if(dd<bd){bd=dd;best=u;}}
-   if(best){t.cd=t.hit;shots.push({kind:'arrow',x:t.x,y:t.y,tx:best.x,ty:best.y,tgt:best,side:t.side,dmg:t.dmg,spd:460});}}
- }
- // 抛射物
- for(let i=shots.length-1;i>=0;i--){const s=shots[i];
-  if(s.spell){ // 火球(带火焰尾迹)
-   const dx=s.tx-s.x,dy=s.ty-s.y,dd=Math.hypot(dx,dy);
-   if(Math.random()<.8)fx.push({x:s.x+(Math.random()-.5)*10,y:s.y+(Math.random()-.5)*10,t:.3,c:Math.random()<.5?'#fa0':'#f55'});
-   if(dd<12){boom(s.tx,s.ty,s.radius,s.side,s.dmg);shots.splice(i,1);continue;}
-   s.x+=dx/dd*s.spd*dt;s.y+=dy/dd*s.spd*dt;
-  }else{
-   if(s.tgt&&s.tgt.hp<=0){shots.splice(i,1);continue;}
-   const dx=(s.tgt?s.tgt.x:s.tx)-s.x,dy=(s.tgt?s.tgt.y:s.ty)-s.y,dd=Math.hypot(dx,dy);
-   if(dd<14){if(s.tgt)hit(s.tgt,s.dmg);shots.splice(i,1);continue;}
-   s.x+=dx/dd*s.spd*dt;s.y+=dy/dd*s.spd*dt;
-  }
- }
- fx.forEach(f=>{if(f.t!==undefined)f.t-=dt;if(f.slash!==undefined)f.slash-=dt;
-  if(f.vx)f.x+=f.vx*dt;if(f.vy)f.y+=f.vy*dt;});
- fx=fx.filter(f=>(f.t===undefined?1:f.t)>0&&(f.slash===undefined||f.slash>0));
- renderHUD();
-}
-function hit(t,dmg){
- t.hp-=dmg;t.flash=.15;
- fx.push({num:Math.round(dmg),x:t.x+(Math.random()-.5)*16,y:t.y-22,t:.6,vy:-46,c:'#ffe'});
- if(t.hp<=0&&t.isTower){ // 塔被毁
-  crowns[t.side==='p'?'e':'p']++;
-  boomFx(t.x,t.y,40);
-  const ks=towers.find(q=>q.side===t.side&&q.king);
-  if(t.king){endGame(t.side==='p'?'e':'p');}
-  else if(ks&&ks.hp>0){ks.rng=160;ks.dmg=100;} // 王塔激怒
- }
-}
-function boom(x,y,r,side,dmg){
- boomFx(x,y,r/2);
- for(const u of units){if(u.side!==side&&Math.hypot(u.x-x,u.y-y)<r)u.hp-=dmg;}
- for(const t of towers){if(t.hp>0&&t.side!==side&&Math.hypot(t.x-x,t.y-y)<r+14)t.hp-=dmg*0.4;}
-}
-function boomFx(x,y,n){for(let i=0;i<n;i++)fx.push({x,y,t:.4+Math.random()*.3,c:Math.random()<.5?'#fa0':'#f55',vx:(Math.random()-.5)*160,vy:(Math.random()-.5)*160});}
-function endGame(w){
- if(over)return;over=true;
- if(!w){ // 超时:比皇冠、再比塔血
-  if(crowns.p!==crowns.e)w=crowns.p>crowns.e?'p':'e';
-  else{const hp=s=>towers.filter(t=>t.side===s).reduce((a,t)=>a+Math.max(0,t.hp),0);
-   w=hp('p')===hp('e')?'':(hp('p')>hp('e')?'p':'e');}
- }
- winner=w;
- say(w?(w==='p'?'🎉 你赢了!点击场地再来一局':'💀 AI 赢了!点击场地再来一局'):'🤝 平局!点击场地再来一局');
-}
-// ===== 渲染 =====
-let handKey='';
-function renderHUD(){
- const m=Math.floor(Math.max(0,timer)/60),s=Math.floor(Math.max(0,timer)%60);
- document.getElementById('timer').textContent=`${m}:${String(s).padStart(2,'0')}`;
- document.getElementById('cp').textContent=crowns.p;
- document.getElementById('ce').textContent=crowns.e;
- document.getElementById('dexl').textContent=timer<=60?'💧圣水x2!':'';
- const k=hand.p.join()+'|'+Math.round(elix.p*4)+'|'+(selCard||'');
- if(started&&!over&&k!==handKey){handKey=k;renderHand();}
-}
-function hpBar(x,y,w,frac,front){
- ctx.fillStyle='#000a';ctx.fillRect(x-w/2,y,w,5);
- ctx.fillStyle=front;ctx.fillRect(x-w/2,y,w*Math.max(0,frac),5);
-}
-function draw(){
- ctx.clearRect(0,0,W,H);
- // 场地
- for(let r=0;r<16;r++)for(let c=0;c<10;c++){
-  ctx.fillStyle=(r+c)%2?'#6a9c4e':'#5f8f46';ctx.fillRect(c*W/10,r*H/16,W/10,H/16);
- }
- // 河与桥
- ctx.fillStyle='#3a6ea5';ctx.fillRect(0,RIVER_Y-RIVER_H/2,W,RIVER_H);
- ctx.fillStyle='#2c5a8a';
- for(let x=0;x<W;x+=26)ctx.fillRect(x+((performance.now()/900)%1)*26-26,RIVER_Y-4,14,3);
- LX.forEach(bx=>{ctx.fillStyle='#a5793d';ctx.fillRect(bx-26,RIVER_Y-RIVER_H/2,52,RIVER_H);ctx.fillStyle='#8a6430';ctx.fillRect(bx-26,RIVER_Y-6,52,4);});
- ctx.font='13px sans-serif';ctx.textAlign='center';
- // 塔
- towers.forEach(t=>{
-  if(t.hp<=0){ctx.font='24px serif';ctx.fillText('🔥',t.x,t.y);return;}
-  ctx.fillStyle=t.side==='p'?'#3a6fd8':'#d84a3a';
-  ctx.fillRect(t.x-t.r,t.y-t.r,t.r*2,t.r*2);
-  ctx.strokeStyle='#fff8';ctx.lineWidth=3;ctx.strokeRect(t.x-t.r,t.y-t.r,t.r*2,t.r*2);
-  if(t.flash>0){ctx.fillStyle='#ffffff66';ctx.fillRect(t.x-t.r,t.y-t.r,t.r*2,t.r*2);}
-  ctx.fillStyle='#fff';ctx.font=(t.king?'22px':'18px')+' serif';
-  ctx.fillText(t.king?'👑':'🏹',t.x,t.y+6);
-  hpBar(t.x,t.y-t.r-12,t.r*2,t.hp/t.maxHp,t.side==='p'?'#4f4':'#f66');
- });
- // 单位(攻击突刺 + 受击闪白)
- units.forEach(u=>{
-  const d=CARDS[u.k];
-  let ox=0,oy=0;
-  if(u.atk>0){const k=Math.sin((1-u.atk/.22)*Math.PI)*13;ox=(u.atkDx||0)*k;oy=(u.atkDy||0)*k;}
-  if(u.flash>0){ctx.fillStyle='#ffffff99';ctx.beginPath();ctx.arc(u.x+ox,u.y+oy,17,0,7);ctx.fill();}
-  ctx.font=(d.hp>500?'30px':'24px')+' serif';
-  ctx.save();if(u.side==='e'){ctx.translate(u.x+ox,u.y+oy);ctx.scale(-1,1);ctx.translate(-u.x-ox,-u.y-oy);}
-  ctx.fillText(d.icon,u.x+ox,u.y+oy+8);ctx.restore();
-  hpBar(u.x,u.y-20,30,u.hp/u.maxHp,u.side==='p'?'#4f4':'#f66');
- });
- // 抛射物(箭矢/子弹/炮弹/火球)
- shots.forEach(s=>{
-  if(s.spell){ctx.font='26px serif';ctx.fillText('🔥',s.x,s.y);
-   ctx.strokeStyle='#f808';ctx.beginPath();ctx.arc(s.tx,s.ty,s.radius,0,7);ctx.stroke();return;}
-  const ang=Math.atan2((s.tgt?s.tgt.y:s.ty)-s.y,(s.tgt?s.tgt.x:s.tx)-s.x);
-  ctx.save();ctx.translate(s.x,s.y);ctx.rotate(ang);
-  if(s.kind==='ball'){
-   ctx.fillStyle='#fff3';ctx.beginPath();ctx.arc(-8,0,5,0,7);ctx.fill();
-   ctx.fillStyle='#2a2a2a';ctx.beginPath();ctx.arc(0,0,5.5,0,7);ctx.fill();
-   ctx.fillStyle='#777';ctx.beginPath();ctx.arc(-2,-2,2,0,7);ctx.fill();
-  }else if(s.kind==='bullet'){
-   ctx.strokeStyle='#ffdf5e';ctx.lineWidth=3.5;ctx.beginPath();ctx.moveTo(-11,0);ctx.lineTo(4,0);ctx.stroke();
-   ctx.fillStyle='#fff8';ctx.beginPath();ctx.arc(5,0,3,0,7);ctx.fill();
-  }else{
-   ctx.strokeStyle=s.side==='p'?'#eaf6ff':'#ffd9c9';ctx.lineWidth=2.5;
-   ctx.beginPath();ctx.moveTo(-11,0);ctx.lineTo(6,0);ctx.stroke();
-   ctx.fillStyle=s.side==='p'?'#fff':'#ffd0b8';
-   ctx.beginPath();ctx.moveTo(10,0);ctx.lineTo(3,-3.2);ctx.lineTo(3,3.2);ctx.fill();
-   if(s.side==='e'){ctx.beginPath();ctx.moveTo(-10,0);ctx.lineTo(-15,-2.5);ctx.lineTo(-15,2.5);ctx.fill();}
-  }
-  ctx.restore();
- });
- // 特效(刀光弧线 / 伤害数字 / 火花粒子)
- fx.forEach(f=>{
-  if(f.slash!==undefined){
-   const p=1-f.slash/.18;
-   ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.a);
-   ctx.strokeStyle=f.c;ctx.globalAlpha=1-p;ctx.lineWidth=4;
-   ctx.beginPath();ctx.arc(0,0,13+p*11,-1,1);ctx.stroke();ctx.restore();ctx.globalAlpha=1;
-  }else if(f.num){
-   ctx.globalAlpha=Math.min(1,f.t*2.5);ctx.fillStyle=f.c;
-   ctx.font='bold 13px sans-serif';ctx.fillText(f.num,f.x,f.y);ctx.globalAlpha=1;
-  }else{
-   ctx.fillStyle=f.c;ctx.globalAlpha=Math.min(1,f.t*3);ctx.fillRect(f.x-3,f.y-3,6,6);ctx.globalAlpha=1;
-  }
- });
- // 圣水条(底部)
- const ey=H-14;
- ctx.fillStyle='#000a';ctx.fillRect(10,ey,W-20,10);
- ctx.fillStyle='#b05dd8';ctx.fillRect(10,ey,(W-20)*elix.p/10,10);
- ctx.fillStyle='#fff';ctx.font='11px sans-serif';ctx.textAlign='left';
- ctx.fillText(`💧 ${Math.floor(elix.p)}/10`,14,ey+9);ctx.textAlign='center';
- // 开始/结束遮罩
- if(!started||over){
-  ctx.fillStyle='#000b';ctx.fillRect(0,0,W,H);ctx.fillStyle='#fff';ctx.font='28px sans-serif';
-  ctx.fillText(!started?'⚔️ 点击开始对战 AI':(winner==='p'?'🎉 胜利!':winner==='e'?'💀 战败!':'🤝 平局!'),W/2,H/2-10);
-  ctx.font='15px sans-serif';ctx.fillText('点击场地再来一局',W/2,H/2+26);
- }
-}
-let last=performance.now();
-function loop(t){const dt=Math.min(.05,(t-last)/1000);last=t;update(dt);draw();requestAnimationFrame(loop);}
-reset();renderHand();requestAnimationFrame(loop);
-</script>
+
+<section>
+  <h2>🃏 固定卡池 · 8 张</h2>
+  <div class="sub">4 张手牌循环出牌,悬浮卡牌可查看血量 / 伤害 / 攻速等属性</div>
+  <div class="cards">
+    <div class="card"><span class="cost">💧2</span><div class="ic">💀</div><div class="nm">骷髅</div><div class="ds">一次部署 3 个,人海战术拉扯敌方输出</div></div>
+    <div class="card"><span class="cost">💧3</span><div class="ic">🗡️</div><div class="nm">骑士</div><div class="ds">血量伤害均衡的近战主力</div></div>
+    <div class="card"><span class="cost">💧3</span><div class="ic">🏹</div><div class="nm">弓箭手</div><div class="ds">一次部署 2 个,廉价远程输出</div></div>
+    <div class="card"><span class="cost">💧3</span><div class="ic">🏰</div><div class="nm">加农炮</div><div class="ds">防守建筑,持续掉血,25 秒消失</div></div>
+    <div class="card"><span class="cost">💧4</span><div class="ic">⚔️</div><div class="nm">迷你皮卡</div><div class="ds">单体爆发之王,两刀一个骑士</div></div>
+    <div class="card"><span class="cost">💧4</span><div class="ic">🔫</div><div class="nm">火枪手</div><div class="ds">超长射程,后排稳定输出</div></div>
+    <div class="card"><span class="cost">💧4</span><div class="ic">🔥</div><div class="nm">火球</div><div class="ds">范围法术,清人海、补塔伤</div></div>
+    <div class="card"><span class="cost">💧5</span><div class="ic">🗿</div><div class="nm">巨人</div><div class="ds">只攻击塔和建筑,强力肉盾</div></div>
+  </div>
+</section>
+
+<section>
+  <h2>🎮 怎么玩</h2>
+  <div class="sub">点击卡牌 → 点击自己半场部署,摧毁对方国王塔获胜</div>
+  <div class="steps">
+    <div class="step"><span class="n">STEP 1</span><b>💧 攒圣水</b><p>圣水每 2.8 秒回 1 点,上限 10;卡牌会随圣水从黑白点亮为彩色,底部进度条一目了然。</p></div>
+    <div class="step"><span class="n">STEP 2</span><b>🃏 出牌</b><p>4 张手牌循环,出一张补一张,还能预览下一张。部队只能部署在自己半场,火球全场可放。</p></div>
+    <div class="step"><span class="n">STEP 3</span><b>⚔️ 对战</b><p>单位自动寻路过桥、索敌、攻击;箭矢、炮弹、刀光全部可见,伤害数字实时飘出。</p></div>
+    <div class="step"><span class="n">STEP 4</span><b>👑 夺冠</b><p>3 分钟内摧毁国王塔直接获胜;超时比皇冠数、再比塔血。最后一分钟圣水双倍!</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>✨ 特色</h2>
+  <div class="sub">纯原生 JavaScript + Canvas,单文件零依赖</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:6px">
+    <div class="feat"><span>🧠</span><div>会防守也会进攻的 AI:检测威胁下场防守,巨人沉底、桥头压进,人海聚集时扔火球</div></div>
+    <div class="feat"><span>🌉</span><div>双路 + 河道地形:单位自动选择最近的桥过河,公主塔被毁后王塔激怒</div></div>
+    <div class="feat"><span>🎆</span><div>全可视化战斗:箭矢曳光、加农炮弹、近战刀光、受击闪白、爆炸粒子</div></div>
+    <div class="feat"><span>📱</span><div>自适应布局,手机浏览器也能玩,点击即部署</div></div>
+  </div>
+</section>
+
+<div class="cta">
+  <a class="play" href="game.html">▶ 开始游戏</a>
+  <p>免费 · 无需安装 · 打开即玩</p>
+</div>
+
+<footer>
+  <a href="https://github.com/AlghaPorthos/clash_royal" target="_blank">GitHub · AlghaPorthos/clash_royal</a>
+  · 用 Canvas 与 ❤️ 制作
+</footer>
 </body>
 </html>
