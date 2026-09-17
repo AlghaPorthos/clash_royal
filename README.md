@@ -55,3 +55,7 @@ clash_royal/
 ## License
 
 All rights reserved.
+
+## Juvia Readme
+
+Section added by @Juviamai via the **Juvia Readme** pull request.
