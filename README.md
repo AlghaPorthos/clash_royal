@@ -1,4 +1,4 @@
-# ⚔️ Clash Royal
+# ⚔️ Clash Royal(演示分支版本)
 
 一个简化版的皇室战争(Clash Royale)风格游戏项目。
 
