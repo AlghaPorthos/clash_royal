@@ -13,3 +13,7 @@ git clone https://github.com/AlghaPorthos/clash_royal.git
 ## License
 
 All rights reserved.
+
+## Juvia Readme
+
+Section added by @Juviamai via the **Juvia Readme** pull request.
