@@ -1,4 +1,4 @@
-# ⚔️ Clash Royal
+# ⚔️ Clash Royal · 简化版皇室战争
 
 一个简化版的皇室战争(Clash Royale)风格游戏项目。
 
