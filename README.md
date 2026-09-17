@@ -1,14 +1,50 @@
-# clash_royal
+# ⚔️ Clash Royal
 
-Project code for the clash_royal repository.
+一个简化版的皇室战争(Clash Royale)风格游戏项目。
 
-## Getting Started
+## 🎮 玩法设想
 
-Clone the repository, then add your project code here.
+- 双人对战:你与对手各守一路,摧毁对方国王塔获胜
+- 消耗圣水(⬆️ Elixir)在场上部署卡牌单位
+- 单位自动前进、索敌、攻击,典型卡牌类型:
+  - 🗡️ 近战单位(骑士、迷你皮卡)
+  - 🏹 远程单位(弓箭手、火枪手)
+  - 🧙 法术(火球、闪电)
+  - 🏰 建筑(加农炮)
+
+## 🛠️ 技术方案
+
+| 项目 | 方案 |
+|---|---|
+| 实现 | HTML5 Canvas + 原生 JavaScript |
+| 结构 | 单文件起步,后续按模块拆分 |
+| 运行 | 浏览器直接打开,零依赖 |
+
+## 🚀 运行
 
 ```bash
 git clone https://github.com/AlghaPorthos/clash_royal.git
+cd clash_royal
+open index.html   # macOS;Windows 双击 index.html
 ```
+
+## 📁 目录结构(计划)
+
+```
+clash_royal/
+├── index.html   # 入口页面
+├── game.js      # 游戏主逻辑
+├── cards.js     # 卡牌与单位定义
+└── README.md
+```
+
+## 🗺️ 开发路线
+
+- [ ] 场地渲染与圣水自动回复
+- [ ] 卡牌部署与单位基础 AI(移动/索敌/攻击)
+- [ ] 简单敌方 AI 出牌
+- [ ] 胜负判定与 UI
+- [ ] 更多卡牌与平衡性调整
 
 ## License
 
