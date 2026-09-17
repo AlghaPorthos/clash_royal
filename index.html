@@ -6,6 +6,7 @@
 <title>Clash Royal · 简化版皇室战争</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
   body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#0d1420;color:#e8eef7;overflow-x:hidden}
   a{color:inherit;text-decoration:none}
   /* ---- Hero ---- */
@@ -22,6 +23,13 @@
     box-shadow:0 8px 28px #ff983855;transition:transform .15s,box-shadow .15s}
   .play:hover{transform:translateY(-3px);box-shadow:0 12px 34px #ff983877}
   .meta{margin-top:22px;font-size:14px;color:#7d92b8}
+  /* ---- 导航菜单(4 个按钮:对战 / 图鉴 / 说明 / 语言) ---- */
+  .nav{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:-6px}
+  .nbtn{padding:14px 30px;font-size:17px;font-weight:bold;font-family:inherit;border-radius:40px;cursor:pointer;
+    border:2px solid #27405f;background:#16233a;color:#e8eef7;transition:transform .15s,border-color .15s,box-shadow .15s}
+  .nbtn:hover{transform:translateY(-3px);border-color:#ffd700;box-shadow:0 8px 24px #0006}
+  .nbtn.primary{background:linear-gradient(135deg,#ffd700,#ff9838);color:#1a1200;border:none;box-shadow:0 8px 28px #ff983855}
+  .nbtn.primary:hover{box-shadow:0 12px 34px #ff983877}
   /* ---- 卡池 ---- */
   section{max-width:960px;margin:0 auto;padding:56px 20px}
   h2{font-size:28px;text-align:center;margin-bottom:8px}
@@ -53,56 +61,118 @@
 <div class="hero">
   <div class="crown">👑</div>
   <h1>CLASH ROYAL</h1>
-  <div class="tagline">简化版皇室战争 · 固定 8 张卡牌 · 与 AI 实时对战</div>
-  <a class="play" href="game.html">▶ 开始游戏</a>
-  <div class="meta">⏱ 3 分钟一局 · 💧 圣水机制 · 🌉 双路过桥 · 零依赖,浏览器即开即玩</div>
+  <div class="tagline" data-i18n="tagline">简化版皇室战争 · 固定 8 张卡牌 · 与 AI 实时对战</div>
+  <nav class="nav">
+    <button class="nbtn primary" id="btnPlay">⚔️ <span data-i18n="play">开始对战</span></button>
+    <button class="nbtn" id="btnCards">🃏 <span data-i18n="cardsBtn">卡牌图鉴</span></button>
+    <button class="nbtn" id="btnHow">📖 <span data-i18n="howBtn">玩法说明</span></button>
+    <button class="nbtn" id="btnLang">🌐 <span id="langLabel">English</span></button>
+  </nav>
+  <div class="meta" data-i18n="meta">⏱ 3 分钟一局 · 💧 圣水机制 · 🌉 双路过桥 · 零依赖,浏览器即开即玩</div>
 </div>
 
-<section>
-  <h2>🃏 固定卡池 · 8 张</h2>
-  <div class="sub">4 张手牌循环出牌,悬浮卡牌可查看血量 / 伤害 / 攻速等属性</div>
-  <div class="cards">
-    <div class="card"><span class="cost">💧2</span><div class="ic">💀</div><div class="nm">骷髅</div><div class="ds">一次部署 3 个,人海战术拉扯敌方输出</div></div>
-    <div class="card"><span class="cost">💧3</span><div class="ic">🗡️</div><div class="nm">骑士</div><div class="ds">血量伤害均衡的近战主力</div></div>
-    <div class="card"><span class="cost">💧3</span><div class="ic">🏹</div><div class="nm">弓箭手</div><div class="ds">一次部署 2 个,廉价远程输出</div></div>
-    <div class="card"><span class="cost">💧3</span><div class="ic">🏰</div><div class="nm">加农炮</div><div class="ds">防守建筑,持续掉血,25 秒消失</div></div>
-    <div class="card"><span class="cost">💧4</span><div class="ic">⚔️</div><div class="nm">迷你皮卡</div><div class="ds">单体爆发之王,两刀一个骑士</div></div>
-    <div class="card"><span class="cost">💧4</span><div class="ic">🔫</div><div class="nm">火枪手</div><div class="ds">超长射程,后排稳定输出</div></div>
-    <div class="card"><span class="cost">💧4</span><div class="ic">🔥</div><div class="nm">火球</div><div class="ds">范围法术,清人海、补塔伤</div></div>
-    <div class="card"><span class="cost">💧5</span><div class="ic">🗿</div><div class="nm">巨人</div><div class="ds">只攻击塔和建筑,强力肉盾</div></div>
-  </div>
+<section id="pool">
+  <h2 data-i18n="poolTitle">🃏 固定卡池 · 8 张</h2>
+  <div class="sub" data-i18n="poolSub">4 张手牌循环出牌,悬浮卡牌可查看血量 / 伤害 / 攻速等属性</div>
+  <div class="cards" id="cardGrid"></div>
+</section>
+
+<section id="howto">
+  <h2 data-i18n="howTitle">🎮 怎么玩</h2>
+  <div class="sub" data-i18n="howSub">点击卡牌 → 点击自己半场部署,摧毁对方国王塔获胜</div>
+  <div class="steps" id="stepGrid"></div>
 </section>
 
 <section>
-  <h2>🎮 怎么玩</h2>
-  <div class="sub">点击卡牌 → 点击自己半场部署,摧毁对方国王塔获胜</div>
-  <div class="steps">
-    <div class="step"><span class="n">STEP 1</span><b>💧 攒圣水</b><p>圣水每 2.8 秒回 1 点,上限 10;卡牌会随圣水从黑白点亮为彩色,底部进度条一目了然。</p></div>
-    <div class="step"><span class="n">STEP 2</span><b>🃏 出牌</b><p>4 张手牌循环,出一张补一张,还能预览下一张。部队只能部署在自己半场,火球全场可放。</p></div>
-    <div class="step"><span class="n">STEP 3</span><b>⚔️ 对战</b><p>单位自动寻路过桥、索敌、攻击;箭矢、炮弹、刀光全部可见,伤害数字实时飘出。</p></div>
-    <div class="step"><span class="n">STEP 4</span><b>👑 夺冠</b><p>3 分钟内摧毁国王塔直接获胜;超时比皇冠数、再比塔血。最后一分钟圣水双倍!</p></div>
-  </div>
-</section>
-
-<section>
-  <h2>✨ 特色</h2>
-  <div class="sub">纯原生 JavaScript + Canvas,单文件零依赖</div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:6px">
-    <div class="feat"><span>🧠</span><div>会防守也会进攻的 AI:检测威胁下场防守,巨人沉底、桥头压进,人海聚集时扔火球</div></div>
-    <div class="feat"><span>🌉</span><div>双路 + 河道地形:单位自动选择最近的桥过河,公主塔被毁后王塔激怒</div></div>
-    <div class="feat"><span>🎆</span><div>全可视化战斗:箭矢曳光、加农炮弹、近战刀光、受击闪白、爆炸粒子</div></div>
-    <div class="feat"><span>📱</span><div>自适应布局,手机浏览器也能玩,点击即部署</div></div>
-  </div>
+  <h2 data-i18n="featTitle">✨ 特色</h2>
+  <div class="sub" data-i18n="featSub">纯原生 JavaScript + Canvas,单文件零依赖</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:6px" id="featGrid"></div>
 </section>
 
 <div class="cta">
-  <a class="play" href="game.html">▶ 开始游戏</a>
-  <p>免费 · 无需安装 · 打开即玩</p>
+  <a class="play" href="game.html">▶ <span data-i18n="play">开始对战</span></a>
+  <p data-i18n="ctaP">免费 · 无需安装 · 打开即玩</p>
 </div>
 
 <footer>
   <a href="https://github.com/AlghaPorthos/clash_royal" target="_blank">GitHub · AlghaPorthos/clash_royal</a>
-  · 用 Canvas 与 ❤️ 制作
+  · <span data-i18n="madeWith">用 Canvas 与 ❤️ 制作</span>
 </footer>
+
+<script>
+// ===== 中英双语 =====
+const I18N={
+ zh:{
+  tagline:'简化版皇室战争 · 固定 8 张卡牌 · 与 AI 实时对战',
+  play:'开始对战',cardsBtn:'卡牌图鉴',howBtn:'玩法说明',
+  meta:'⏱ 3 分钟一局 · 💧 圣水机制 · 🌉 双路过桥 · 零依赖,浏览器即开即玩',
+  poolTitle:'🃏 固定卡池 · 8 张',
+  poolSub:'4 张手牌循环出牌,每张卡牌都标注了费用与特点',
+  howTitle:'🎮 怎么玩',
+  howSub:'点击卡牌 → 点击自己半场部署,摧毁对方国王塔获胜',
+  featTitle:'✨ 特色',
+  featSub:'纯原生 JavaScript + Canvas,单文件零依赖',
+  ctaP:'免费 · 无需安装 · 打开即玩',
+  madeWith:'用 Canvas 与 ❤️ 制作'
+ },
+ en:{
+  tagline:'Simplified Clash Royale · 8 fixed cards · Real-time battle vs AI',
+  play:'BATTLE',cardsBtn:'CARDS',howBtn:'HOW TO PLAY',
+  meta:'⏱ 3-min matches · 💧 Elixir system · 🌉 Two lanes & bridges · Zero dependencies, play in your browser',
+  poolTitle:'🃏 Fixed Card Pool · 8 Cards',
+  poolSub:'Cycle 4 cards in hand — every card shows its cost and role',
+  howTitle:'🎮 How to Play',
+  howSub:'Tap a card → tap your half to deploy. Destroy the enemy King Tower to win!',
+  featTitle:'✨ Features',
+  featSub:'Vanilla JavaScript + Canvas, single file, zero dependencies',
+  ctaP:'Free · No install · Play instantly',
+  madeWith:'Made with Canvas and ❤️'
+ }
+};
+const CARDS=[
+ {icon:'💀',cost:2,nm:{zh:'骷髅',en:'Skeletons'},ds:{zh:'一次部署 3 个,人海战术拉扯敌方输出',en:'Deploys 3 at once — swarm and distract the enemy'}},
+ {icon:'🗡️',cost:3,nm:{zh:'骑士',en:'Knight'},ds:{zh:'血量伤害均衡的近战主力',en:'Balanced melee fighter with solid HP and damage'}},
+ {icon:'🏹',cost:3,nm:{zh:'弓箭手',en:'Archers'},ds:{zh:'一次部署 2 个,廉价远程输出',en:'Deploys 2 at once — cheap ranged damage'}},
+ {icon:'🏰',cost:3,nm:{zh:'加农炮',en:'Cannon'},ds:{zh:'防守建筑,持续掉血,25 秒消失',en:'Defensive building that decays over 25 seconds'}},
+ {icon:'⚔️',cost:4,nm:{zh:'迷你皮卡',en:'Mini P.E.K.K.A'},ds:{zh:'单体爆发之王,两刀一个骑士',en:'Single-target burst king — slays a Knight in two hits'}},
+ {icon:'🔫',cost:4,nm:{zh:'火枪手',en:'Musketeer'},ds:{zh:'超长射程,后排稳定输出',en:'Long range, steady backline damage'}},
+ {icon:'🔥',cost:4,nm:{zh:'火球',en:'Fireball'},ds:{zh:'范围法术,清人海、补塔伤',en:'Area spell — clears swarms and chips towers'}},
+ {icon:'🗿',cost:5,nm:{zh:'巨人',en:'Giant'},ds:{zh:'只攻击塔和建筑,强力肉盾',en:'Only attacks towers and buildings — the ultimate tank'}}
+];
+const STEPS=[
+ {n:'STEP 1',b:{zh:'💧 攒圣水',en:'💧 Save Elixir'},p:{zh:'圣水每 2.8 秒回 1 点,上限 10;卡牌会随圣水从黑白点亮为彩色,底部进度条一目了然。',en:'Elixir regenerates 1 point every 2.8s up to 10; cards light up from gray to color as it fills.'}},
+ {n:'STEP 2',b:{zh:'🃏 出牌',en:'🃏 Play Cards'},p:{zh:'4 张手牌循环,出一张补一张,还能预览下一张。部队只能部署在自己半场,火球全场可放。',en:'Your 4-card hand cycles as you play, with a preview of the next card. Troops deploy on your half only; Fireball goes anywhere.'}},
+ {n:'STEP 3',b:{zh:'⚔️ 对战',en:'⚔️ Battle'},p:{zh:'单位自动寻路过桥、索敌、攻击;箭矢、炮弹、刀光全部可见,伤害数字实时飘出。',en:'Units path across bridges, seek targets and attack — arrows, cannonballs and slashes all visible with floating damage numbers.'}},
+ {n:'STEP 4',b:{zh:'👑 夺冠',en:'👑 Win Crowns'},p:{zh:'3 分钟内摧毁国王塔直接获胜;超时比皇冠数、再比塔血。最后一分钟圣水双倍!',en:'Destroy the King Tower to win instantly; otherwise most crowns (then tower HP) wins. Elixir doubles in the last minute!'}}
+];
+const FEATS=[
+ {ic:'🧠',p:{zh:'会防守也会进攻的 AI:检测威胁下场防守,巨人沉底、桥头压进,人海聚集时扔火球',en:'A smart AI: defends against pushes, sinks Giants at the back, pressures bridges and fireballs swarms'}},
+ {ic:'🌉',p:{zh:'双路 + 河道地形:单位自动选择最近的桥过河,公主塔被毁后王塔激怒',en:'Two lanes + river terrain: units pick the nearest bridge; losing a Princess Tower enrages the King Tower'}},
+ {ic:'🎆',p:{zh:'全可视化战斗:箭矢曳光、加农炮弹、近战刀光、受击闪白、爆炸粒子',en:'Fully visual combat: arrow tracers, cannonballs, melee slashes, hit flashes and explosion particles'}},
+ {ic:'📱',p:{zh:'自适应布局,手机浏览器也能玩,点击即部署',en:'Responsive layout — playable on mobile browsers, tap to deploy'}}
+];
+let lang=localStorage.getItem('cr_lang')||'zh';
+function t(k){return (I18N[lang]&&I18N[lang][k])||I18N.zh[k]||k;}
+function renderAll(){
+ document.getElementById('cardGrid').innerHTML=CARDS.map(c=>
+  `<div class="card"><span class="cost">💧${c.cost}</span><div class="ic">${c.icon}</div><div class="nm">${c.nm[lang]}</div><div class="ds">${c.ds[lang]}</div></div>`).join('');
+ document.getElementById('stepGrid').innerHTML=STEPS.map(s=>
+  `<div class="step"><span class="n">${s.n}</span><b>${s.b[lang]}</b><p>${s.p[lang]}</p></div>`).join('');
+ document.getElementById('featGrid').innerHTML=FEATS.map(f=>
+  `<div class="feat"><span>${f.ic}</span><div>${f.p[lang]}</div></div>`).join('');
+}
+function applyLang(){
+ document.documentElement.lang=lang;
+ document.querySelectorAll('[data-i18n]').forEach(e=>{e.textContent=t(e.getAttribute('data-i18n'));});
+ document.getElementById('langLabel').textContent=lang==='zh'?'English':'中文';
+ renderAll();
+}
+// ===== 导航按钮 =====
+document.getElementById('btnPlay').onclick=()=>{location.href='game.html';};
+document.getElementById('btnCards').onclick=()=>document.getElementById('pool').scrollIntoView({behavior:'smooth'});
+document.getElementById('btnHow').onclick=()=>document.getElementById('howto').scrollIntoView({behavior:'smooth'});
+document.getElementById('btnLang').onclick=()=>{lang=lang==='zh'?'en':'zh';localStorage.setItem('cr_lang',lang);applyLang();};
+applyLang();
+</script>
 </body>
 </html>
