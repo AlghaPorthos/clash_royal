@@ -16,6 +16,13 @@
   .card .ic{font-size:32px;margin-top:12px}
   .card .nm{margin-top:4px}
   .card .cost{position:absolute;top:-8px;left:-8px;background:#b05dd8;border-radius:50%;width:24px;height:24px;line-height:24px;font-weight:bold;border:2px solid #fff}
+  .card .pb{position:absolute;bottom:0;left:0;right:0;height:6px;background:#0009;border-radius:0 0 8px 8px;overflow:hidden}
+  .card .pb i{display:block;height:100%;background:linear-gradient(90deg,#7ae,#5df)}
+  #tip{position:fixed;display:none;z-index:10;pointer-events:none;background:#18243acc;border:1px solid #6ad;border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.7;min-width:150px;backdrop-filter:blur(3px)}
+  #tip .th{font-size:14px;font-weight:bold;color:#ffd700;margin-bottom:4px}
+  #tip .tr{display:flex;justify-content:space-between;gap:16px}
+  #tip .tr b{color:#9cf;font-weight:normal}
+  #tip .sp{color:#fd8;margin-top:4px}
   #next{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:#cde}
   #next .ic{font-size:26px}
   #msg{height:20px;font-size:15px;color:#ffd700;font-weight:bold}
@@ -32,6 +39,7 @@
 <div id="msg">点击卡牌,再点击自己下半场部署!</div>
 <canvas id="cv" width="480" height="800"></canvas>
 <div id="hand"></div>
+<div id="tip"></div>
 <script>
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 const W=480,H=800,RIVER_Y=H/2,RIVER_H=44,LX=[W*0.22,W*0.78];
@@ -63,20 +71,47 @@ function reset(){
 }
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 // ===== UI =====
+// 卡牌悬浮提示 + 圣水充能(黑白→彩色)
+const tip=document.getElementById('tip');
+let hoverKey=null;
+const SPECIAL={giant:'只攻击建筑与塔,不会打小兵',skeletons:'一次部署 3 个小骷髅',archers:'一次部署 2 个远程单位',cannon:'防守建筑,持续掉血,25 秒后消失',fireball:'范围伤害,对塔只造成 40% 伤害',minipekka:'单体爆发伤害极高'};
+const SPD_NAME={0:'固定',30:'慢速',40:'中速',45:'中速',60:'快速'};
+function cardTipHtml(k){
+ const d=CARDS[k];
+ const rows=[['血量',d.type==='spell'?'—':d.hp],['伤害',d.dmg],['攻击速度',d.hit+' 秒/次'],
+  ['射程',d.type==='spell'?'全场':(d.rng>50?'远程':'近战')]];
+ if(d.type!=='spell')rows.push(['移动速度',SPD_NAME[d.spd]||'中速']);
+ return `<div class="th">${d.icon} ${d.name} <span style="color:#c9f">💧${d.cost}</span></div>`+
+  rows.map(r=>`<div class="tr"><b>${r[0]}</b><span>${r[1]}</span></div>`).join('')+
+  (SPECIAL[k]?`<div class="sp">✦ ${SPECIAL[k]}</div>`:'');
+}
+function showTip(el,k){
+ tip.innerHTML=cardTipHtml(k);tip.style.display='block';
+ const r=el.getBoundingClientRect();
+ tip.style.left=Math.max(8,Math.min(innerWidth-170,r.left))+'px';
+ tip.style.top=(r.top-tip.offsetHeight-10)+'px';
+}
 const handEl=document.getElementById('hand');
 function renderHand(){
  handEl.innerHTML='';
- // 下一张
  const nx=document.createElement('div');nx.id='next';
  nx.innerHTML=`下一张<br><span class="ic">${CARDS[queue.p[0]].icon}</span>`;
  handEl.appendChild(nx);
  hand.p.forEach(k=>{
   const d=CARDS[k],c=document.createElement('div');
-  c.className='card'+(selCard===k?' sel':'')+(elix.p<d.cost?' poor':'');
-  c.innerHTML=`<div class="cost">${d.cost}</div><div class="ic">${d.icon}</div><div class="nm">${d.name}</div>`;
+  c.className='card'+(selCard===k?' sel':'');
+  const p=Math.min(1,elix.p/d.cost); // 圣水充能进度:0=黑白 1=彩色
+  c.style.filter=`grayscale(${(1-p)*100}%) brightness(${.5+.5*p})`;
+  c.innerHTML=`<div class="cost">${d.cost}</div><div class="ic">${d.icon}</div><div class="nm">${d.name}</div><div class="pb"><i style="width:${p*100}%"></i></div>`;
   c.onclick=()=>{selCard=(selCard===k)?null:k;renderHand();};
+  c.onmouseenter=()=>{hoverKey=k;showTip(c,k);};
+  c.onmouseleave=()=>{if(hoverKey===k){hoverKey=null;tip.style.display='none';}};
   handEl.appendChild(c);
  });
+ if(hoverKey){ // 手牌重渲染时保持提示可见
+  const el=[...handEl.querySelectorAll('.card')][hand.p.indexOf(hoverKey)];
+  if(el)showTip(el,hoverKey);else{hoverKey=null;tip.style.display='none';}
+ }
 }
 const msg=document.getElementById('msg');
 function say(t){msg.textContent=t;}
@@ -135,11 +170,17 @@ function aiThink(dt){
 }
 // ===== 逻辑 =====
 function liveTowers(side){return towers.filter(t=>t.side===side&&t.hp>0);}
-function nearestTower(u){let best=null,bd=1e9;for(const t of liveTowers(u.side==='p'?'e':'p')){const d=Math.hypot(t.x-u.x,t.y-u.y);if(d<bd){bd=d;best=t;}}return{t:best,d:bd};}
+function nearestStruct(u){ // 最近的塔或建筑(巨人/无敌人时攻击)
+ let best=null,bd=1e9;
+ for(const t of liveTowers(u.side==='p'?'e':'p')){const d=Math.hypot(t.x-u.x,t.y-u.y);if(d<bd){bd=d;best=t;}}
+ for(const b of units){if(b.side!==u.side&&b.hp>0&&CARDS[b.k].type==='building'){const d=Math.hypot(b.x-u.x,b.y-u.y);if(d<bd){bd=d;best=b;}}}
+ return best;
+}
 function findTarget(u){
+ if(CARDS[u.k].onlyTowers)return nearestStruct(u); // 巨人:三座塔 + 建筑
  const enemies=units.filter(q=>q.side!==u.side&&q.hp>0&&CARDS[q.k].type!=='building');
- if(!CARDS[u.k].onlyTowers){let best=null,bd=170;for(const q of enemies){const d=Math.hypot(q.x-u.x,q.y-u.y);if(d<bd){bd=d;best=q;}}if(best)return best;}
- const nt=nearestTower(u);return nt.t;
+ let best=null,bd=170;for(const q of enemies){const d=Math.hypot(q.x-u.x,q.y-u.y);if(d<bd){bd=d;best=q;}}
+ return best||nearestStruct(u);
 }
 function moveToward(u,tx,ty,spd,dt){
  const dx=tx-u.x,dy=ty-u.y,d=Math.hypot(dx,dy)||1;
@@ -156,7 +197,7 @@ function update(dt){
  // 单位
  for(let i=units.length-1;i>=0;i--){const u=units[i],d=CARDS[u.k];
   u.born+=dt;u.cd-=dt;if(u.atk>0)u.atk-=dt;if(u.flash>0)u.flash-=dt;
-  if(d.type==='building'){u.life-=dt;if(u.life<=0){units.splice(i,1);continue;}}
+  if(d.type==='building'){u.life-=dt;u.hp=Math.min(u.hp,d.hp*u.life/d.life);if(u.life<=0){units.splice(i,1);continue;}} // 建筑持续掉血
   if(u.hp<=0){units.splice(i,1);continue;}
   const tgt=findTarget(u);if(!tgt)continue;
   const tr=tgt.r||14,dist=Math.hypot(tgt.x-u.x,tgt.y-u.y)-tr-14;
@@ -241,7 +282,7 @@ function renderHUD(){
  document.getElementById('cp').textContent=crowns.p;
  document.getElementById('ce').textContent=crowns.e;
  document.getElementById('dexl').textContent=timer<=60?'💧圣水x2!':'';
- const k=hand.p.join()+'|'+Math.floor(elix.p)+'|'+(selCard||'');
+ const k=hand.p.join()+'|'+Math.round(elix.p*4)+'|'+(selCard||'');
  if(started&&!over&&k!==handKey){handKey=k;renderHand();}
 }
 function hpBar(x,y,w,frac,front){
