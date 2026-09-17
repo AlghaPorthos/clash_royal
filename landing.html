@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clash Royal · 简化版皇室战争</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#0d1420;color:#e8eef7;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  /* ---- Hero ---- */
+  .hero{position:relative;text-align:center;padding:90px 20px 110px;
+    background:radial-gradient(ellipse at 50% -20%,#2a4a8a 0%,#0d1420 60%),#0d1420}
+  .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:60px;
+    background:linear-gradient(#0d1420ee,transparent);pointer-events:none}
+  .crown{font-size:64px;filter:drop-shadow(0 6px 18px #ffd70066)}
+  h1{font-size:52px;margin:18px 0 10px;letter-spacing:2px;
+    background:linear-gradient(90deg,#ffd700,#ff9838,#ffd700);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tagline{font-size:19px;color:#9fb4d8;margin-bottom:36px}
+  .play{display:inline-block;padding:16px 54px;font-size:20px;font-weight:bold;border-radius:40px;
+    background:linear-gradient(135deg,#ffd700,#ff9838);color:#1a1200;
+    box-shadow:0 8px 28px #ff983855;transition:transform .15s,box-shadow .15s}
+  .play:hover{transform:translateY(-3px);box-shadow:0 12px 34px #ff983877}
+  .meta{margin-top:22px;font-size:14px;color:#7d92b8}
+  /* ---- 卡池 ---- */
+  section{max-width:960px;margin:0 auto;padding:56px 20px}
+  h2{font-size:28px;text-align:center;margin-bottom:8px}
+  .sub{text-align:center;color:#8ba0c6;margin-bottom:34px;font-size:15px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+  .card{background:#16233a;border:1px solid #27405f;border-radius:14px;padding:18px;
+    transition:transform .15s,border-color .15s}
+  .card:hover{transform:translateY(-4px);border-color:#ffd70088}
+  .card .ic{font-size:34px}
+  .card .nm{font-size:17px;font-weight:bold;margin:8px 0 4px}
+  .card .ds{font-size:13px;color:#9fb4d8;line-height:1.6}
+  .card .cost{float:right;color:#c98af0;font-weight:bold}
+  /* ---- 玩法 ---- */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .step{background:#16233a;border-radius:14px;padding:20px;border-left:3px solid #ffd700}
+  .step b{display:block;font-size:16px;margin:6px 0}
+  .step p{font-size:13px;color:#9fb4d8;line-height:1.7}
+  .step .n{color:#ffd700;font-weight:bold;font-size:13px}
+  /* ---- 特性 ---- */
+  .feat{display:flex;gap:12px;align-items:flex-start;padding:14px 0;font-size:14px;color:#c6d5ec;line-height:1.7}
+  .feat span{font-size:22px}
+  .cta{text-align:center;padding:70px 20px 90px;background:radial-gradient(ellipse at 50% 120%,#2a4a8a 0%,#0d1420 65%)}
+  .cta p{color:#9fb4d8;margin-bottom:26px;font-size:15px}
+  footer{text-align:center;padding:26px;color:#5d729a;font-size:13px;border-top:1px solid #1c2c45}
+  footer a:hover{color:#ffd700}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="crown">👑</div>
+  <h1>CLASH ROYAL</h1>
+  <div class="tagline">简化版皇室战争 · 固定 8 张卡牌 · 与 AI 实时对战</div>
+  <a class="play" href="index.html">▶ 开始游戏</a>
+  <div class="meta">⏱ 3 分钟一局 · 💧 圣水机制 · 🌉 双路过桥 · 零依赖,浏览器即开即玩</div>
+</div>
+
+<section>
+  <h2>🃏 固定卡池 · 8 张</h2>
+  <div class="sub">4 张手牌循环出牌,悬浮卡牌可查看血量 / 伤害 / 攻速等属性</div>
+  <div class="cards">
+    <div class="card"><span class="cost">💧2</span><div class="ic">💀</div><div class="nm">骷髅</div><div class="ds">一次部署 3 个,人海战术拉扯敌方输出</div></div>
+    <div class="card"><span class="cost">💧3</span><div class="ic">🗡️</div><div class="nm">骑士</div><div class="ds">血量伤害均衡的近战主力</div></div>
+    <div class="card"><span class="cost">💧3</span><div class="ic">🏹</div><div class="nm">弓箭手</div><div class="ds">一次部署 2 个,廉价远程输出</div></div>
+    <div class="card"><span class="cost">💧3</span><div class="ic">🏰</div><div class="nm">加农炮</div><div class="ds">防守建筑,持续掉血,25 秒消失</div></div>
+    <div class="card"><span class="cost">💧4</span><div class="ic">⚔️</div><div class="nm">迷你皮卡</div><div class="ds">单体爆发之王,两刀一个骑士</div></div>
+    <div class="card"><span class="cost">💧4</span><div class="ic">🔫</div><div class="nm">火枪手</div><div class="ds">超长射程,后排稳定输出</div></div>
+    <div class="card"><span class="cost">💧4</span><div class="ic">🔥</div><div class="nm">火球</div><div class="ds">范围法术,清人海、补塔伤</div></div>
+    <div class="card"><span class="cost">💧5</span><div class="ic">🗿</div><div class="nm">巨人</div><div class="ds">只攻击塔和建筑,强力肉盾</div></div>
+  </div>
+</section>
+
+<section>
+  <h2>🎮 怎么玩</h2>
+  <div class="sub">点击卡牌 → 点击自己半场部署,摧毁对方国王塔获胜</div>
+  <div class="steps">
+    <div class="step"><span class="n">STEP 1</span><b>💧 攒圣水</b><p>圣水每 2.8 秒回 1 点,上限 10;卡牌会随圣水从黑白点亮为彩色,底部进度条一目了然。</p></div>
+    <div class="step"><span class="n">STEP 2</span><b>🃏 出牌</b><p>4 张手牌循环,出一张补一张,还能预览下一张。部队只能部署在自己半场,火球全场可放。</p></div>
+    <div class="step"><span class="n">STEP 3</span><b>⚔️ 对战</b><p>单位自动寻路过桥、索敌、攻击;箭矢、炮弹、刀光全部可见,伤害数字实时飘出。</p></div>
+    <div class="step"><span class="n">STEP 4</span><b>👑 夺冠</b><p>3 分钟内摧毁国王塔直接获胜;超时比皇冠数、再比塔血。最后一分钟圣水双倍!</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>✨ 特色</h2>
+  <div class="sub">纯原生 JavaScript + Canvas,单文件零依赖</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:6px">
+    <div class="feat"><span>🧠</span><div>会防守也会进攻的 AI:检测威胁下场防守,巨人沉底、桥头压进,人海聚集时扔火球</div></div>
+    <div class="feat"><span>🌉</span><div>双路 + 河道地形:单位自动选择最近的桥过河,公主塔被毁后王塔激怒</div></div>
+    <div class="feat"><span>🎆</span><div>全可视化战斗:箭矢曳光、加农炮弹、近战刀光、受击闪白、爆炸粒子</div></div>
+    <div class="feat"><span>📱</span><div>自适应布局,手机浏览器也能玩,点击即部署</div></div>
+  </div>
+</section>
+
+<div class="cta">
+  <a class="play" href="index.html">▶ 开始游戏</a>
+  <p>免费 · 无需安装 · 打开即玩</p>
+</div>
+
+<footer>
+  <a href="https://github.com/AlghaPorthos/clash_royal" target="_blank">GitHub · AlghaPorthos/clash_royal</a>
+  · 用 Canvas 与 ❤️ 制作
+</footer>
+</body>
+</html>
