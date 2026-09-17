@@ -46,6 +46,12 @@ clash_royal/
 - [ ] 胜负判定与 UI
 - [ ] 更多卡牌与平衡性调整
 
+## 🤝 Contributing
+
+1. Fork / clone the repository
+2. Create a feature branch (`git checkout -b feature/my-change`)
+3. Commit your changes and open a pull request
+
 ## License
 
 All rights reserved.
