@@ -10,6 +10,7 @@
 | 技术栈 | HTML5 Canvas + 原生 JavaScript + CSS,零依赖 |
 | 文件结构 | `index.html`(落地页)· `game.html`(对战)· `assets/`(美术素材) |
 | 运行方式 | 浏览器直接打开,无需安装与构建 |
+| 在线体验 | **[🌐 落地页 Landing Page](https://alghaporthos.github.io/clash_royal/)** · [⚔️ 对战页 Battle](https://alghaporthos.github.io/clash_royal/game.html)(GitHub Pages) |
 | 当前状态 | 已可完整游玩:8 卡池、圣水系统、双路过桥寻路、AI 对战、3 分钟计时、双语界面 |
 
 ---
@@ -179,8 +180,8 @@ AI 每 1.2–2.2 秒随机间隔决策一次,按优先级执行:
 
 | 页面 | 文件 | 内容 |
 |---|---|---|
-| 落地页(项目门面) | `index.html` | 英雄区 + 双语导航 + 卡池图鉴 + 玩法四步 + 特性 + CTA + 爆炸过场动画 |
-| 对战页(游戏本体) | `game.html` | 完整战斗引擎与 HUD,顶部计时/皇冠/语言,底部手牌区 |
+| 落地页(项目门面) | [`index.html`](https://github.com/AlghaPorthos/clash_royal/blob/main/index.html) · [在线访问](https://alghaporthos.github.io/clash_royal/) | 英雄区 + 双语导航 + 卡池图鉴 + 玩法四步 + 特性 + CTA + 爆炸过场动画 |
+| 对战页(游戏本体) | [`game.html`](https://github.com/AlghaPorthos/clash_royal/blob/main/game.html) · [在线游玩](https://alghaporthos.github.io/clash_royal/game.html) | 完整战斗引擎与 HUD,顶部计时/皇冠/语言,底部手牌区 |
 | 素材库 | `assets/` | 15 张官方立绘 PNG 与对应卡牌映射表、粉丝内容政策声明(已在游戏内全面启用) |
 
 ---
@@ -231,7 +232,7 @@ cd clash_royal
 open index.html        # macOS;Windows 直接双击 index.html
 ```
 
-或访问 GitHub Pages / 本地任一静态服务器即可,无需安装任何依赖。
+或直接访问 [GitHub Pages 在线落地页](https://alghaporthos.github.io/clash_royal/),无需安装任何依赖。
 
 ---
 
