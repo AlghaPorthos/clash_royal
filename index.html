@@ -30,6 +30,54 @@
   .nbtn:hover{transform:translateY(-3px);border-color:#ffd700;box-shadow:0 8px 24px #0006}
   .nbtn.primary{background:linear-gradient(135deg,#ffd700,#ff9838);color:#1a1200;border:none;box-shadow:0 8px 28px #ff983855}
   .nbtn.primary:hover{box-shadow:0 12px 34px #ff983877}
+  /* ---- 官方素材海报(嵌入首页) ---- */
+  .poster-wrap{max-width:960px;margin:-46px auto 0;padding:0 20px;position:relative;z-index:2}
+  .poster{border-radius:20px;overflow:hidden;border:1px solid #2c4a6e;box-shadow:0 18px 50px #000c;background:#0f1a2c}
+  .poster-field{position:relative;height:360px;overflow:hidden;
+    background:
+     repeating-linear-gradient(90deg,#6a9c4e 0 64px,#5f8f46 64px 128px) 0 0/100% 46.5% no-repeat,
+     linear-gradient(#3a6ea5,#2c5a8a) 0 46.5%/100% 7% no-repeat,
+     repeating-linear-gradient(90deg,#5b8a43 0 64px,#52803b 64px 128px) 0 53.5%/100% 46.5% no-repeat,
+     #0f1a2c}
+  .poster-field::before,.poster-field::after{content:"";position:absolute;top:0;bottom:0;width:55%;pointer-events:none;z-index:1}
+  .poster-field::before{left:0;background:linear-gradient(90deg,#3a6fd83c,transparent)}
+  .poster-field::after{right:0;background:linear-gradient(-90deg,#d84a3a3c,transparent)}
+  .bridge{position:absolute;top:41%;width:9%;height:18%;border-radius:6px;box-shadow:0 3px 10px #0007;
+    background:linear-gradient(90deg,#8a6430,#a5793d 45%,#8a6430)}
+  .b1{left:17%}.b2{left:74%}
+  .ch{position:absolute;z-index:2;filter:drop-shadow(0 10px 14px #0009);animation:bob 3.4s ease-in-out infinite}
+  @keyframes bob{50%{translate:0 -10px}}
+  .tl{left:-8px;top:0;height:46%;z-index:1;filter:drop-shadow(0 6px 10px #0006)}
+  .tr{right:-8px;top:0;height:46%;z-index:1;scale:-1 1;filter:drop-shadow(0 6px 10px #0006)}
+  .p1{left:8%;bottom:7%;height:37%}
+  .p2{left:22%;bottom:6%;height:31%;animation-delay:.5s}
+  .p3{left:34%;bottom:7%;height:27%;animation-delay:1s}
+  .e1{right:7%;top:5%;height:41%;animation-delay:.2s;scale:-1 1}
+  .e2{right:22%;top:7%;height:31%;animation-delay:.7s;scale:-1 1}
+  .e3{right:34%;top:8%;height:27%;animation-delay:1.2s;scale:-1 1}
+  .fb{position:absolute;z-index:3;height:15%;top:36%;left:-18%;filter:drop-shadow(0 0 14px #ff7a2acc);animation:fly 3.8s linear infinite}
+  @keyframes fly{
+   0%{left:-18%;top:34%;rotate:-10deg}
+   50%{top:26%;rotate:2deg}
+   100%{left:110%;top:36%;rotate:12deg}}
+  .vs{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);z-index:4;text-align:center;
+    font-size:46px;font-weight:900;letter-spacing:2px;color:#fff;
+    text-shadow:0 0 22px #ffd700cc,0 4px 0 #7a3c00,0 0 60px #ff9838aa}
+  .vs::before{content:"";position:absolute;inset:-70% -60%;z-index:-1;border-radius:50%;
+    background:radial-gradient(closest-side,#ffd70030,transparent 70%)}
+  .vs .vc{display:block;font-size:36px;filter:drop-shadow(0 4px 12px #ffd70088)}
+  .poster-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    padding:16px 22px;background:linear-gradient(#16233a,#101c30);border-top:1px solid #2c4a6e}
+  .pb-title{font-size:24px;font-weight:900;letter-spacing:2px;
+    background:linear-gradient(90deg,#ffd700,#ff9838,#ffd700);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .pb-title em{font-style:normal;font-size:14px;letter-spacing:1px;display:block;margin-top:2px;
+    -webkit-text-fill-color:#9fb4d8;background:none}
+  @media(max-width:720px){
+   .poster-field{height:250px}
+   .p3,.e3,.tr{display:none}
+   .vs{font-size:34px}.vs .vc{font-size:26px}
+   .pb-title{font-size:19px}
+  }
   /* ---- 卡池 ---- */
   section{max-width:960px;margin:0 auto;padding:56px 20px}
   h2{font-size:28px;text-align:center;margin-bottom:8px}
@@ -88,6 +136,29 @@
   <div class="meta" data-i18n="meta">⏱ 3 分钟一局 · 💧 圣水机制 · 🌉 双路过桥 · 零依赖,浏览器即开即玩</div>
 </div>
 
+<!-- 官方素材海报(Supercell Fankit) -->
+<div class="poster-wrap">
+  <div class="poster">
+    <div class="poster-field">
+      <span class="bridge b1"></span><span class="bridge b2"></span>
+      <img class="tl" src="assets/princess_tower_troop.png" alt="" loading="lazy">
+      <img class="tr" src="assets/dagger_duchess_tower.png" alt="" loading="lazy">
+      <img class="ch p1" src="assets/knight.png" alt="Knight" loading="lazy">
+      <img class="ch p2" src="assets/musketeer.png" alt="Musketeer" loading="lazy">
+      <img class="ch p3" src="assets/archers_evolution.png" alt="Archers" loading="lazy">
+      <img class="ch e1" src="assets/giant.png" alt="Giant" loading="lazy">
+      <img class="ch e2" src="assets/mini_pekka.png" alt="Mini P.E.K.K.A" loading="lazy">
+      <img class="ch e3" src="assets/dark_prince.png" alt="Dark Prince" loading="lazy">
+      <img class="fb" src="assets/fireball.png" alt="" loading="lazy">
+      <div class="vs"><span class="vc">👑</span>VS</div>
+    </div>
+    <div class="poster-bar">
+      <div class="pb-title">CLASH ROYAL<em data-i18n="posterSub">简化版 · 与 AI 一决高下</em></div>
+      <button class="nbtn primary" id="posterPlay">⚔️ <span data-i18n="play">开始对战</span></button>
+    </div>
+  </div>
+</div>
+
 <section id="pool">
   <h2 data-i18n="poolTitle">🃏 固定卡池 · 8 张</h2>
   <div class="sub" data-i18n="poolSub">4 张手牌循环出牌,悬浮卡牌可查看血量 / 伤害 / 攻速等属性</div>
@@ -138,7 +209,8 @@ const I18N={
   featSub:'纯原生 JavaScript + Canvas,单文件零依赖',
   ctaP:'免费 · 无需安装 · 打开即玩',
   madeWith:'用 Canvas 与 ❤️ 制作',
-  battle:'⚔️ 开始对战!',boomHint:'点击任意处直接进入对战'
+  battle:'⚔️ 开始对战!',boomHint:'点击任意处直接进入对战',
+  posterSub:'简化版 · 与 AI 一决高下'
  },
  en:{
   tagline:'Simplified Clash Royale · 8 fixed cards · Real-time battle vs AI',
@@ -152,7 +224,7 @@ const I18N={
   featSub:'Vanilla JavaScript + Canvas, single file, zero dependencies',
   ctaP:'Free · No install · Play instantly',
   madeWith:'Made with Canvas and ❤️',
-  battle:'⚔️ BATTLE!',boomHint:'Tap anywhere to skip'
+  battle:'⚔️ BATTLE!',boomHint:'Tap anywhere to skip',posterSub:'Simplified · Duel the AI'
  }
 };
 const CARD_IMG=['assets/skeletons.png','assets/knight.png','assets/archers_evolution.png','assets/cannon_card.png',
@@ -199,6 +271,7 @@ function applyLang(){
 // ===== 导航按钮 =====
 // 开始对战:先播放爆炸过场,动画结束后自动进入 game.html
 document.getElementById('btnPlay').onclick=startBoom;
+document.getElementById('posterPlay').onclick=startBoom;
 document.querySelectorAll('a.play').forEach(a=>a.onclick=e=>{e.preventDefault();startBoom();});
 document.getElementById('btnCards').onclick=()=>document.getElementById('pool').scrollIntoView({behavior:'smooth'});
 document.getElementById('btnHow').onclick=()=>document.getElementById('howto').scrollIntoView({behavior:'smooth'});
