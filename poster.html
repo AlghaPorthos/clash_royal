@@ -8,116 +8,100 @@
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%}
   body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#0b111e;color:#e8eef7;
-    display:flex;flex-direction:column;overflow:hidden}
+    display:flex;align-items:center;justify-content:center;overflow:hidden}
   a{color:inherit;text-decoration:none}
 
-  /* ---- 舞台 ---- */
-  .stage{position:relative;flex:1;overflow:hidden;
-    background:radial-gradient(ellipse 90% 65% at 50% 30%,#1c3257 0%,#101a30 55%,#0b111e 100%)}
-  /* 地平线光带 */
-  .stage::before{content:"";position:absolute;left:50%;bottom:16%;transform:translateX(-50%);
-    width:min(880px,92%);height:2px;
-    background:linear-gradient(90deg,transparent,#3a6fd8aa 22%,#ffd700cc 50%,#d84a3aaa 78%,transparent)}
-  /* 顶栏 */
-  .topbar{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;
-    align-items:center;padding:18px 26px;z-index:5;font-size:14px}
-  .back{color:#7d92b8;transition:color .15s}
-  .back:hover{color:#ffd700}
-  .brand{letter-spacing:3px;font-weight:900;font-size:12px;color:#42557a}
+  .row{display:flex;align-items:center;justify-content:center;gap:clamp(20px,4vw,64px);
+    width:100%;max-width:1400px;padding:24px}
 
-  /* ---- 标题 ---- */
-  .title{position:absolute;top:13%;left:50%;transform:translateX(-50%);z-index:4;
-    text-align:center;width:min(720px,92%)}
-  .title .kicker{font-size:12px;letter-spacing:6px;color:#7d92b8;margin-bottom:14px}
-  .title h1{font-size:clamp(44px,8vw,86px);font-weight:900;letter-spacing:4px;line-height:1.05;
-    background:linear-gradient(180deg,#ffe9a8 8%,#ffd700 42%,#c87f1a 90%);
+  /* ---- 左右海报 ---- */
+  .panel{position:relative;height:min(78vh,720px);aspect-ratio:3/4;border-radius:18px;overflow:hidden;
+    display:flex;align-items:flex-end;justify-content:center;border:1px solid #2c4a6e}
+  .blue{background:linear-gradient(180deg,#16294a 0%,#0d1a30 100%)}
+  .red{background:linear-gradient(180deg,#421c18 0%,#1c0f0d 100%)}
+  .panel img{height:86%;width:auto;object-fit:contain;filter:drop-shadow(0 16px 28px #000b)}
+  .tag{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);
+    font-size:12px;letter-spacing:3px;font-weight:bold;padding:6px 18px;border-radius:20px;
+    background:#0b111ecc;backdrop-filter:blur(4px)}
+  .blue .tag{color:#8fb8ff;border:1px solid #3a6fd866}
+  .red .tag{color:#ff9a8f;border:1px solid #d84a3a66}
+
+  /* ---- 中间文字 ---- */
+  .mid{flex:1;max-width:420px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:18px}
+  .kicker{font-size:11px;letter-spacing:6px;color:#7d92b8}
+  h1{font-size:clamp(38px,4.6vw,58px);font-weight:900;letter-spacing:3px;line-height:1.08;
+    background:linear-gradient(180deg,#ffe9a8,#ffd700 45%,#c87f1a);
     -webkit-background-clip:text;background-clip:text;color:transparent;
-    filter:drop-shadow(0 6px 22px #ff983840)}
-  .title .sub{margin-top:14px;font-size:clamp(13px,1.7vw,16px);letter-spacing:2px;color:#9fb4d8}
-
-  /* ---- 对决角色 ---- */
-  .ch{position:absolute;z-index:3;animation:bob 4s ease-in-out infinite}
-  @keyframes bob{50%{translate:0 -10px}}
-  .ground{position:absolute;z-index:2;border-radius:50%;
-    background:radial-gradient(closest-side,#0009,transparent 72%)}
-  .hero-l{left:9%;bottom:13%;height:52%}
-  .hero-l .ground{left:50%;bottom:-2.5%;transform:translateX(-50%);width:120%;height:26px;
-    box-shadow:0 0 40px 8px #3a6fd833}
-  .hero-r{right:8%;bottom:11%;height:64%;animation-delay:1.6s;scale:-1 1}
-  .hero-r .ground{left:50%;bottom:-2%;transform:translateX(-50%);width:130%;height:30px;
-    box-shadow:0 0 44px 10px #d84a3a33}
-  .ch img{height:100%;width:auto;display:block;
-    filter:drop-shadow(0 18px 26px #000b)}
-  .hero-l img{--rim:#3a6fd8}
-  /* VS 徽章 */
-  .vs{position:absolute;left:50%;bottom:26%;transform:translate(-50%,50%);z-index:4;
-    width:74px;height:74px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-    font-weight:900;font-size:26px;letter-spacing:1px;color:#ffd700;
-    background:#0b111ecc;border:2px solid #ffd70088;backdrop-filter:blur(4px);
-    box-shadow:0 0 30px #ffd70044, inset 0 0 18px #ffd70022;
-    animation:pulse 4s ease-in-out infinite}
-  @keyframes pulse{50%{box-shadow:0 0 46px #ffd70088, inset 0 0 18px #ffd70022}}
-  /* ---- CTA ---- */
-  .bar{position:absolute;left:50%;bottom:6.5%;transform:translateX(-50%);z-index:5;display:flex;gap:12px}
-  .btn{padding:14px 40px;font-size:16px;font-weight:bold;font-family:inherit;border-radius:40px;cursor:pointer;
-    border:1px solid #2c4a6e;background:#0f1a2cb3;color:#9fb4d8;backdrop-filter:blur(4px);
-    transition:transform .15s,box-shadow .15s,color .15s,border-color .15s}
+    filter:drop-shadow(0 6px 18px #ff983840)}
+  .sub{font-size:15px;letter-spacing:2px;color:#9fb4d8}
+  .vs{display:flex;align-items:center;gap:14px;width:82%;color:#ffd700;font-weight:900;font-size:20px}
+  .vs::before,.vs::after{content:"";flex:1;height:1px}
+  .vs::before{background:linear-gradient(90deg,transparent,#3a6fd8)}
+  .vs::after{background:linear-gradient(90deg,#d84a3a,transparent)}
+  .btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  .btn{padding:13px 36px;font-size:15px;font-weight:bold;font-family:inherit;border-radius:40px;cursor:pointer;
+    border:1px solid #2c4a6e;background:#0f1a2cb3;color:#9fb4d8;transition:transform .15s,color .15s,border-color .15s}
   .btn:hover{transform:translateY(-2px);color:#e8eef7;border-color:#ffd70066}
   .btn.primary{background:linear-gradient(135deg,#ffd700,#ff9838);color:#1a1200;border:none;
     box-shadow:0 10px 30px #ff983855}
-  .btn.primary:hover{box-shadow:0 14px 38px #ff983877;color:#1a1200}
-  /* ---- 页脚 ---- */
-  footer{position:absolute;left:0;right:0;bottom:0;z-index:5;text-align:center;
-    padding:12px 20px;font-size:11px;color:#42557a}
-  footer a:hover{color:#ffd700}
-  @media(max-width:720px){
-   .hero-l{left:2%;bottom:16%;height:38%}
-   .hero-r{right:1%;bottom:15%;height:47%}
-   .vs{width:58px;height:58px;font-size:20px;bottom:34%}
-   .title{top:10%}
+  .btn.primary:hover{box-shadow:0 14px 36px #ff983877;color:#1a1200}
+  .legal{font-size:11px;color:#42557a;line-height:1.6}
+  .legal a:hover{color:#ffd700}
+  .back{position:absolute;top:18px;left:22px;font-size:13px;color:#7d92b8}
+  .back:hover{color:#ffd700}
+
+  @media(max-width:860px){
+   body{overflow:auto}
+   .row{flex-direction:column;gap:16px;padding:64px 20px 32px}
+   .panel{height:44vh;width:min(78vw,340px)}
+   .mid{max-width:none}
   }
 </style>
 </head>
 <body>
-<div class="stage">
-  <div class="topbar">
-    <a class="back" href="index.html">← <span id="backL">返回首页</span></a>
-    <span class="brand">CLASH ROYAL</span>
-  </div>
+<a class="back" href="index.html">← <span id="backL">返回首页</span></a>
 
-  <div class="title">
+<div class="row">
+  <section class="panel blue">
+    <img src="assets/knight.png" alt="Knight">
+    <span class="tag">KNIGHT · <span class="nm">骑士</span></span>
+  </section>
+
+  <section class="mid">
     <div class="kicker" id="kickerL">SIMPLIFIED EDITION</div>
     <h1>CLASH<br>ROYAL</h1>
-    <div class="sub" id="subL">8 张卡牌 · 3 分钟 · 与 AI 一决高下</div>
-  </div>
+    <p class="sub" id="subL">8 张卡牌 · 3 分钟 · 与 AI 一决高下</p>
+    <div class="vs">VS</div>
+    <div class="btns">
+      <button class="btn primary" id="goBattle">⚔️ <span id="playL">开始对战</span></button>
+      <a class="btn" href="index.html">🏠 <span id="homeL">回到首页</span></a>
+    </div>
+    <p class="legal">
+      <span id="legalL">素材来自 Supercell Fankit</span> ·
+      <a href="https://www.supercell.com/fan-content-policy" target="_blank" id="legal2L">非官方粉丝内容</a>
+    </p>
+  </section>
 
-  <div class="ch hero-l"><img src="assets/knight.png" alt="Knight"><span class="ground"></span></div>
-  <div class="ch hero-r"><img src="assets/giant.png" alt="Giant"><span class="ground"></span></div>
-  <div class="vs">VS</div>
-
-  <div class="bar">
-    <button class="btn primary" id="goBattle">⚔️ <span id="playL">开始对战</span></button>
-    <a class="btn" href="index.html">🏠 <span id="homeL">回到首页</span></a>
-  </div>
-
-  <footer>
-    <span id="legalL">素材来自 Supercell Fankit · 本素材为非官方内容,未经 Supercell 认可</span>
-  </footer>
+  <section class="panel red">
+    <img src="assets/giant.png" alt="Giant">
+    <span class="tag">GIANT · <span class="nm2">巨人</span></span>
+  </section>
 </div>
 
 <script>
 const lang=localStorage.getItem('cr_lang')||'zh';
 const I18N={
  zh:{back:'返回首页',sub:'8 张卡牌 · 3 分钟 · 与 AI 一决高下',play:'开始对战',home:'回到首页',
-  legal:'素材来自 Supercell Fankit · 本素材为非官方内容,未经 Supercell 认可',title:'Clash Royal · 海报'},
+  legal:'素材来自 Supercell Fankit',legal2:'非官方粉丝内容',nm:'骑士',nm2:'巨人',title:'Clash Royal · 海报'},
  en:{back:'Back to Home',sub:'8 CARDS · 3 MINUTES · DUEL THE AI',play:'BATTLE',home:'Home',
-  legal:'Assets from Supercell Fankit · This material is unofficial and is not endorsed by Supercell',title:'Clash Royal · Poster'}
+  legal:'Assets from Supercell Fankit',legal2:'Unofficial fan content',nm:'Knight',nm2:'Giant',title:'Clash Royal · Poster'}
 };
 const t=k=>I18N[lang][k];
 document.documentElement.lang=lang;
 document.title=t('title');
-backL.textContent=t('back');subL.textContent=t('sub');playL.textContent=t('play');
-homeL.textContent=t('home');legalL.textContent=t('legal');
+for(const id of ['backL','subL','playL','homeL','legalL','legal2L'])document.getElementById(id).textContent=t(id.slice(0,-1));
+document.querySelector('.nm').textContent=t('nm');
+document.querySelector('.nm2').textContent=t('nm2');
 goBattle.onclick=()=>location.href='game.html';
 </script>
 </body>
