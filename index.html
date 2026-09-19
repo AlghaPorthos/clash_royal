@@ -55,6 +55,22 @@
   .cta p{color:#9fb4d8;margin-bottom:26px;font-size:15px}
   footer{text-align:center;padding:26px;color:#5d729a;font-size:13px;border-top:1px solid #1c2c45}
   footer a:hover{color:#ffd700}
+  /* ---- 点击开始 · 皇室战争式爆炸过场 ---- */
+  #boom{position:fixed;inset:0;z-index:9999;display:none;cursor:pointer;user-select:none;
+    background:radial-gradient(ellipse at 50% 50%,#13223e 0%,#05080f 72%)}
+  #boom.show{display:block}
+  #boomCv{position:absolute;inset:0;width:100%;height:100%}
+  #boomTxt{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);opacity:0;
+    font-size:clamp(38px,9vw,84px);font-weight:900;letter-spacing:6px;color:#ffd700;white-space:nowrap;
+    text-shadow:0 0 26px #ff9838,0 5px 0 #7a3c00,0 0 70px #ff9838aa;pointer-events:none}
+  #boomTxt.in{animation:boomIn .5s cubic-bezier(.18,1.8,.35,1) forwards}
+  @keyframes boomIn{
+    0%{transform:translate(-50%,-50%) scale(3.2);opacity:0}
+    60%{transform:translate(-50%,-50%) scale(.9);opacity:1}
+    100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
+  #boomHint{position:absolute;left:50%;bottom:7%;transform:translateX(-50%);
+    font-size:13px;letter-spacing:3px;color:#ffffff70;opacity:0;transition:opacity .5s .8s;pointer-events:none}
+  #boom.show #boomHint{opacity:1}
 </style>
 </head>
 <body>
@@ -99,6 +115,13 @@
   · <span data-i18n="madeWith">用 Canvas 与 ❤️ 制作</span>
 </footer>
 
+<!-- 点击开始 · 皇室战争式爆炸过场 -->
+<div id="boom">
+  <canvas id="boomCv"></canvas>
+  <div id="boomTxt"></div>
+  <div id="boomHint"></div>
+</div>
+
 <script>
 // ===== 中英双语 =====
 const I18N={
@@ -113,7 +136,8 @@ const I18N={
   featTitle:'✨ 特色',
   featSub:'纯原生 JavaScript + Canvas,单文件零依赖',
   ctaP:'免费 · 无需安装 · 打开即玩',
-  madeWith:'用 Canvas 与 ❤️ 制作'
+  madeWith:'用 Canvas 与 ❤️ 制作',
+  battle:'⚔️ 开始对战!',boomHint:'点击任意处直接进入对战'
  },
  en:{
   tagline:'Simplified Clash Royale · 8 fixed cards · Real-time battle vs AI',
@@ -126,7 +150,8 @@ const I18N={
   featTitle:'✨ Features',
   featSub:'Vanilla JavaScript + Canvas, single file, zero dependencies',
   ctaP:'Free · No install · Play instantly',
-  madeWith:'Made with Canvas and ❤️'
+  madeWith:'Made with Canvas and ❤️',
+  battle:'⚔️ BATTLE!',boomHint:'Tap anywhere to skip'
  }
 };
 const CARDS=[
@@ -169,11 +194,128 @@ function applyLang(){
  renderAll();
 }
 // ===== 导航按钮 =====
-document.getElementById('btnPlay').onclick=()=>{location.href='game.html';};
+// 开始对战:先播放爆炸过场,动画结束后自动进入 game.html
+document.getElementById('btnPlay').onclick=startBoom;
+document.querySelectorAll('a.play').forEach(a=>a.onclick=e=>{e.preventDefault();startBoom();});
 document.getElementById('btnCards').onclick=()=>document.getElementById('pool').scrollIntoView({behavior:'smooth'});
 document.getElementById('btnHow').onclick=()=>document.getElementById('howto').scrollIntoView({behavior:'smooth'});
 document.getElementById('btnLang').onclick=()=>{lang=lang==='zh'?'en':'zh';localStorage.setItem('cr_lang',lang);applyLang();};
 applyLang();
+
+// ===== 点击开始 · 皇室战争式爆炸过场 =====
+// 节奏:双王冠相向冲锋(约0.8s)→ 对撞瞬间白闪+震屏+冲击波+火花粒子 → "开始对战!"砸入 → 自动进入 game.html
+const boomEl=document.getElementById('boom'),boomCv=document.getElementById('boomCv'),
+      boomTxt=document.getElementById('boomTxt'),boomHint=document.getElementById('boomHint'),
+      bctx=boomCv.getContext('2d');
+let boomOn=false;
+function startBoom(){
+ if(boomOn)return;boomOn=true;
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches){location.href='game.html';return;}
+ boomEl.classList.add('show');document.body.style.overflow='hidden';
+ boomTxt.textContent=t('battle');boomHint.textContent=t('boomHint');
+ let W2=innerWidth,H2=innerHeight;
+ const dpr=Math.min(2,devicePixelRatio||1);
+ const fit=()=>{W2=innerWidth;H2=innerHeight;boomCv.width=W2*dpr;boomCv.height=H2*dpr;bctx.setTransform(dpr,0,0,dpr,0,0);};
+ fit();addEventListener('resize',fit);
+ const IMPACT=820,END=2150; // 冲锋时长 / 过场总时长(ms)
+ const parts=[],rings=[],suck=[];
+ let shake=0,flash=0,t0=0,prev=0,done=false;
+ const cL={x:0,y:0,vx:0,vy:0,rot:0,vr:0},cR={x:0,y:0,vx:0,vy:0,rot:0,vr:0};
+ function impact(){
+  const CX=W2/2,CY=H2/2;
+  shake=26;flash=1;suck.length=0;
+  rings.push({r:8,v:1600,a:1,w:9,c:'#fff'},{r:8,v:1000,a:.95,w:18,c:'#ffd75e'},{r:8,v:2300,a:.8,w:5,c:'#ff7a2a'});
+  const cols=['#fff','#fff3c4','#ffd75e','#ffb340','#ff7a2a','#ff4a2a'];
+  for(let i=0;i<170;i++){
+   const a=Math.random()*Math.PI*2,sp=140+Math.random()*840;
+   parts.push({x:CX,y:CY,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:2+Math.random()*5.5,
+    life:.55+Math.random()*.8,t:0,c:cols[Math.random()*cols.length|0],g:200+Math.random()*280});
+  }
+  for(let i=0;i<26;i++){ // 长条余烬
+   const a=Math.random()*Math.PI*2,sp=300+Math.random()*760;
+   parts.push({x:CX,y:CY,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:1.6,life:.4+Math.random()*.5,t:0,
+    c:'#ffe9a8',g:60,streak:true});
+  }
+  cL.vx=-(280+Math.random()*180);cL.vy=-160+Math.random()*140;cL.vr=-(4.5+Math.random()*3);
+  cR.vx=280+Math.random()*180;cR.vy=-160+Math.random()*140;cR.vr=4.5+Math.random()*3;
+  boomTxt.classList.add('in');
+ }
+ function drawCrown(c,glow){
+  bctx.save();bctx.translate(c.x,c.y);bctx.rotate(c.rot);
+  bctx.shadowColor=glow;bctx.shadowBlur=30;
+  bctx.font='58px serif';bctx.textAlign='center';bctx.textBaseline='middle';
+  bctx.fillText('👑',0,0);bctx.restore();
+ }
+ function frame(now){
+  if(!t0){t0=now;prev=now;}
+  const dt=Math.min(.048,(now-prev)/1000);prev=now;
+  const t=now-t0,CX=W2/2,CY=H2/2;
+  bctx.clearRect(0,0,W2,H2);
+  if(t<IMPACT){ // 冲锋:两王冠相向加速 + 圣水能量向中心汇聚
+   const p=t/IMPACT,e=p*p;
+   cL.x=-90+(CX-62+90)*e;cR.x=W2+90-(W2+90-(CX+62))*e;
+   cL.y=cR.y=CY+Math.sin(t/90)*4;
+   cL.rot=.16*e;cR.rot=-.16*e;
+   const orbR=9+p*26+Math.sin(t/55)*3;
+   const g=bctx.createRadialGradient(CX,CY,0,CX,CY,orbR*4.5);
+   g.addColorStop(0,'#ffffffee');g.addColorStop(.22,'#ffd75edd');g.addColorStop(.55,'#ff7a2a44');g.addColorStop(1,'#ff7a2a00');
+   bctx.fillStyle=g;bctx.beginPath();bctx.arc(CX,CY,orbR*4.5,0,7);bctx.fill();
+   if(Math.random()<.85){const a=Math.random()*Math.PI*2,d0=170+Math.random()*340;
+    suck.push({x:CX+Math.cos(a)*d0,y:CY+Math.sin(a)*d0,sp:420+Math.random()*520});}
+   for(const s of suck){
+    const dx=CX-s.x,dy=CY-s.y,dd=Math.hypot(dx,dy)||1;
+    s.x+=dx/dd*s.sp*dt;s.y+=dy/dd*s.sp*dt;
+    bctx.strokeStyle='#ffd75e';bctx.globalAlpha=Math.max(0,Math.min(1,1-dd/260));
+    bctx.lineWidth=1.6;bctx.beginPath();bctx.moveTo(s.x,s.y);bctx.lineTo(s.x+dx/dd*9,s.y+dy/dd*9);bctx.stroke();
+   }
+   bctx.globalAlpha=1;
+   if(Math.random()<.75){ // 王冠冲锋尾迹
+    parts.push({x:cL.x+34,y:cL.y+(Math.random()-.5)*22,vx:-(110+Math.random()*130),vy:(Math.random()-.5)*60,
+     r:2+Math.random()*3,life:.35,t:0,c:'#6fb4ff',g:0});
+    parts.push({x:cR.x-34,y:cR.y+(Math.random()-.5)*22,vx:110+Math.random()*130,vy:(Math.random()-.5)*60,
+     r:2+Math.random()*3,life:.35,t:0,c:'#ff9a5e',g:0});
+   }
+  }else{ // 撞机后:王冠被冲击波弹飞
+   cL.x+=cL.vx*dt;cL.y+=cL.vy*dt;cL.vy+=300*dt;cL.vx*=Math.exp(-.9*dt);cL.rot+=cL.vr*dt;
+   cR.x+=cR.vx*dt;cR.y+=cR.vy*dt;cR.vy+=300*dt;cR.vx*=Math.exp(-.9*dt);cR.rot+=cR.vr*dt;
+  }
+  const dr=Math.exp(-1.7*dt);
+  for(const q of parts){q.t+=dt;q.vy+=q.g*dt;q.vx*=dr;q.vy*=dr;q.x+=q.vx*dt;q.y+=q.vy*dt;}
+  for(let i=rings.length-1;i>=0;i--){const r=rings[i];
+   r.r+=r.v*dt;r.v*=Math.exp(-2.4*dt);r.a-=dt*1.15;if(r.a<=0)rings.splice(i,1);}
+  const sx=(Math.random()-.5)*shake,sy=(Math.random()-.5)*shake;
+  bctx.save();bctx.translate(sx,sy);
+  for(const r of rings){ // 冲击波
+   bctx.strokeStyle=r.c;bctx.globalAlpha=Math.max(0,r.a);
+   bctx.lineWidth=r.w*Math.max(.2,r.a);bctx.beginPath();bctx.arc(CX,CY,r.r,0,7);bctx.stroke();
+  }
+  bctx.globalAlpha=1;
+  for(const q of parts){ // 火花粒子
+   const al=1-q.t/q.life;if(al<=0)continue;
+   bctx.globalAlpha=al;
+   if(q.streak){bctx.strokeStyle=q.c;bctx.lineWidth=q.r;bctx.beginPath();
+    bctx.moveTo(q.x,q.y);bctx.lineTo(q.x-q.vx*.045,q.y-q.vy*.045);bctx.stroke();}
+   else{bctx.fillStyle=q.c;bctx.beginPath();bctx.arc(q.x,q.y,q.r*(.5+al*.5),0,7);bctx.fill();}
+  }
+  bctx.globalAlpha=1;
+  if(t<IMPACT+1100){ // 王冠
+   const fade=t>IMPACT+700?1-(t-IMPACT-700)/400:1;
+   bctx.globalAlpha=Math.max(0,fade);
+   drawCrown(cL,'#4a90ff');drawCrown(cR,'#ff5040');
+   bctx.globalAlpha=1;
+  }
+  bctx.restore();
+  if(flash>0){ // 白闪(不随震屏)
+   flash-=dt*2.4;bctx.fillStyle='#fff';bctx.globalAlpha=Math.max(0,flash);
+   bctx.fillRect(0,0,W2,H2);bctx.globalAlpha=1;
+  }
+  shake*=Math.exp(-4.2*dt);
+  if(t>=END&&!done){done=true;location.href='game.html';return;}
+  requestAnimationFrame(frame);
+ }
+ requestAnimationFrame(frame);
+ boomEl.addEventListener('click',()=>{if(!done){done=true;location.href='game.html';}}); // 点击跳过
+}
 </script>
 </body>
 </html>
