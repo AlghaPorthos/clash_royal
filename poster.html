@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clash Royal · 海报</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#0d1420;color:#e8eef7;
+    min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  /* ---- 顶栏 ---- */
+  .topbar{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;font-size:14px}
+  .back{display:inline-flex;align-items:center;gap:6px;color:#9fb4d8;transition:color .15s}
+  .back:hover{color:#ffd700}
+  .brand{font-weight:900;letter-spacing:2px;color:#5d729a}
+  /* ---- 海报主体 ---- */
+  .stage{position:relative;flex:1;min-height:520px;overflow:hidden;
+    background:
+     repeating-linear-gradient(90deg,#6a9c4e 0 64px,#5f8f46 64px 128px) 0 0/100% 46.5% no-repeat,
+     linear-gradient(#3a6ea5,#2c5a8a) 0 46.5%/100% 7% no-repeat,
+     repeating-linear-gradient(90deg,#5b8a43 0 64px,#52803b 64px 128px) 0 53.5%/100% 46.5% no-repeat,
+     #0d1420}
+  .stage::before,.stage::after{content:"";position:absolute;top:0;bottom:0;width:55%;pointer-events:none;z-index:1}
+  .stage::before{left:0;background:linear-gradient(90deg,#3a6fd83c,transparent)}
+  .stage::after{right:0;background:linear-gradient(-90deg,#d84a3a3c,transparent)}
+  .vignette{position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(ellipse at 50% 42%,transparent 55%,#0d142066 100%)}
+  .bridge{position:absolute;top:41%;width:9%;height:18%;border-radius:6px;box-shadow:0 3px 10px #0007;
+    background:linear-gradient(90deg,#8a6430,#a5793d 45%,#8a6430)}
+  .b1{left:17%}.b2{left:74%}
+  /* ---- 标题区 ---- */
+  .title{position:absolute;left:50%;top:9%;transform:translateX(-50%);z-index:5;text-align:center;width:100%}
+  .title h1{font-size:clamp(40px,7vw,72px);letter-spacing:4px;font-weight:900;
+    background:linear-gradient(90deg,#ffd700,#ff9838,#ffd700);-webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 4px 18px #ff983866)}
+  .title .sub{font-size:clamp(13px,1.8vw,17px);color:#dbe7f8;letter-spacing:2px;margin-top:8px;
+    text-shadow:0 2px 8px #000a}
+  /* ---- 角色 ---- */
+  .ch{position:absolute;z-index:3;filter:drop-shadow(0 12px 18px #000a);animation:bob 3.4s ease-in-out infinite}
+  @keyframes bob{50%{translate:0 -12px}}
+  .tl{left:-10px;top:0;height:44%;z-index:2;filter:drop-shadow(0 6px 10px #0006)}
+  .tr{right:-10px;top:0;height:44%;z-index:2;scale:-1 1;filter:drop-shadow(0 6px 10px #0006)}
+  .p1{left:7%;bottom:6%;height:40%}
+  .p2{left:21%;bottom:5%;height:34%;animation-delay:.5s}
+  .p3{left:34%;bottom:6%;height:29%;animation-delay:1s}
+  .e1{right:6%;top:16%;height:44%;animation-delay:.2s;scale:-1 1}
+  .e2{right:21%;top:18%;height:33%;animation-delay:.7s;scale:-1 1}
+  .e3{right:34%;top:19%;height:29%;animation-delay:1.2s;scale:-1 1}
+  .sk{left:45%;bottom:4%;height:16%;animation-delay:.9s}
+  .fb{position:absolute;z-index:4;height:16%;top:40%;left:-18%;filter:drop-shadow(0 0 16px #ff7a2acc);animation:fly 3.8s linear infinite}
+  @keyframes fly{
+   0%{left:-18%;top:38%;rotate:-10deg}
+   50%{top:28%;rotate:2deg}
+   100%{left:110%;top:40%;rotate:12deg}}
+  .vs{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);z-index:5;
+    font-size:clamp(44px,6vw,64px);font-weight:900;letter-spacing:2px;color:#fff;
+    text-shadow:0 0 22px #ffd700cc,0 4px 0 #7a3c00,0 0 60px #ff9838aa}
+  .vs::before{content:"";position:absolute;inset:-70% -60%;z-index:-1;border-radius:50%;
+    background:radial-gradient(closest-side,#ffd70030,transparent 70%)}
+  .vs .vc{display:block;font-size:.78em;filter:drop-shadow(0 4px 12px #ffd70088)}
+  /* ---- 底部操作条 ---- */
+  .bar{position:absolute;left:50%;bottom:5%;transform:translateX(-50%);z-index:6;
+    display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+  .btn{padding:15px 44px;font-size:17px;font-weight:bold;font-family:inherit;border-radius:40px;cursor:pointer;
+    border:2px solid #27405f;background:#16233acc;color:#e8eef7;backdrop-filter:blur(4px);
+    transition:transform .15s,box-shadow .15s,border-color .15s}
+  .btn:hover{transform:translateY(-3px);border-color:#ffd700;box-shadow:0 8px 24px #0006}
+  .btn.primary{background:linear-gradient(135deg,#ffd700,#ff9838);color:#1a1200;border:none;
+    box-shadow:0 8px 28px #ff983866}
+  .btn.primary:hover{box-shadow:0 12px 34px #ff983877}
+  /* ---- 页脚 ---- */
+  footer{text-align:center;padding:16px 20px;font-size:12px;color:#5d729a;line-height:1.7}
+  footer a:hover{color:#ffd700}
+  @media(max-width:720px){
+   .p3,.e3,.tr{display:none}
+   .tl{height:34%}
+   .stage{min-height:440px}
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="back" href="index.html">← <span id="backL">返回首页</span></a>
+  <span class="brand">CLASH ROYAL · POSTER</span>
+</div>
+
+<div class="stage">
+  <span class="bridge b1"></span><span class="bridge b2"></span>
+  <div class="vignette"></div>
+  <img class="tl" src="assets/princess_tower_troop.png" alt="">
+  <img class="tr" src="assets/dagger_duchess_tower.png" alt="">
+  <div class="title">
+    <h1>CLASH ROYAL</h1>
+    <div class="sub" id="subL">简化版 · 固定 8 张卡牌 · 与 AI 一决高下</div>
+  </div>
+  <img class="ch p1" src="assets/knight.png" alt="Knight">
+  <img class="ch p2" src="assets/musketeer.png" alt="Musketeer">
+  <img class="ch p3" src="assets/archers_evolution.png" alt="Archers">
+  <img class="ch e1" src="assets/giant.png" alt="Giant">
+  <img class="ch e2" src="assets/mini_pekka.png" alt="Mini P.E.K.K.A">
+  <img class="ch e3" src="assets/dark_prince.png" alt="Dark Prince">
+  <img class="ch sk" src="assets/skeletons.png" alt="Skeletons">
+  <img class="fb" src="assets/fireball.png" alt="">
+  <div class="vs"><span class="vc">👑</span>VS</div>
+  <div class="bar">
+    <button class="btn primary" id="goBattle">⚔️ <span id="playL">开始对战</span></button>
+    <a class="btn" href="index.html">🏠 <span id="homeL">回到首页</span></a>
+  </div>
+</div>
+
+<footer>
+  素材来自 <a href="https://fankit.supercell.com/" target="_blank">Supercell Fankit</a> ·
+  <span id="legalL">本素材为非官方内容,未经 Supercell 认可(fan-content-policy)</span>
+</footer>
+
+<script>
+const lang=localStorage.getItem('cr_lang')||'zh';
+const I18N={
+ zh:{back:'返回首页',sub:'简化版 · 固定 8 张卡牌 · 与 AI 一决高下',play:'开始对战',home:'回到首页',
+  legal:'本素材为非官方内容,未经 Supercell 认可(www.supercell.com/fan-content-policy)',
+  title:'Clash Royal · 海报'},
+ en:{back:'Back to Home',sub:'Simplified · 8 fixed cards · Duel the AI',play:'BATTLE',home:'Home',
+  legal:'This material is unofficial and is not endorsed by Supercell (www.supercell.com/fan-content-policy)',
+  title:'Clash Royal · Poster'}
+};
+const t=k=>I18N[lang][k];
+document.documentElement.lang=lang;
+document.title=t('title');
+backL.textContent=t('back');subL.textContent=t('sub');playL.textContent=t('play');
+homeL.textContent=t('home');legalL.textContent=t('legal');
+goBattle.onclick=()=>location.href='game.html';
+</script>
+</body>
+</html>
