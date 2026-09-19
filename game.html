@@ -32,9 +32,10 @@
 <h2>⚔️ Clash Royal 简化版 · 对战 AI</h2>
 <div id="top">
   <span>⏱ <span id="timer">3:00</span></span>
-  <span>👑 你 <span id="cp">0</span></span>
+  <span>👑 <span id="youL">你</span> <span id="cp">0</span></span>
   <span>AI <span id="ce">0</span> 👑</span>
   <span id="dexl" style="color:#e080ff"></span>
+  <button id="gLang" title="Language" style="background:#16233a;color:#e8eef7;border:1px solid #27405f;border-radius:16px;padding:2px 12px;cursor:pointer;font-size:14px">🌐</button>
 </div>
 <div id="msg">点击卡牌,再点击自己下半场部署!</div>
 <canvas id="cv" width="480" height="800"></canvas>
@@ -55,6 +56,38 @@ const CARDS={
  fireball:{name:'火球',cost:4,icon:'🔥',hp:1,dmg:300,radius:85,type:'spell'}
 };
 const DECK=['knight','archers','giant','minipekka','musketeer','skeletons','cannon','fireball'];
+// ===== 中英双语(与 landing 页共用 localStorage 的 cr_lang) =====
+let LANG=localStorage.getItem('cr_lang')||'zh';
+const NAME_EN={knight:'Knight',archers:'Archers',giant:'Giant',minipekka:'Mini P.E.K.K.A',musketeer:'Musketeer',skeletons:'Skeletons',cannon:'Cannon',fireball:'Fireball'};
+const N=k=>LANG==='en'?(NAME_EN[k]||CARDS[k].name):CARDS[k].name;
+const L={
+ zh:{h2:'⚔️ Clash Royal 简化版 · 对战 AI',you:'你',hint:'点击卡牌,再点击自己下半场部署!',
+  noElixir:'圣水不足!',ownHalf:'只能部署在自己半场!',start:'战斗开始!',again:'新一轮开始!',
+  win:'🎉 你赢了!点击场地再来一局',lose:'💀 AI 赢了!点击场地再来一局',draw:'🤝 平局!点击场地再来一局',
+  clickStart:'⚔️ 点击开始对战 AI',playAgain:'点击场地再来一局',
+  ovWin:'🎉 胜利!',ovLose:'💀 战败!',ovDraw:'🤝 平局!',dbl:'💧圣水x2!',next:'下一张',
+  hp:'血量',dmg:'伤害',hit:'攻击速度',rng:'射程',spd:'移动速度',anywhere:'全场',ranged:'远程',melee:'近战',
+  hitUnit:'秒/次',special:{giant:'只攻击建筑与塔,不会打小兵',skeletons:'一次部署 3 个小骷髅',archers:'一次部署 2 个远程单位',
+   cannon:'防守建筑,持续掉血,25 秒后消失',fireball:'范围伤害,对塔只造成 40% 伤害',minipekka:'单体爆发伤害极高'},
+  spdName:{0:'固定',30:'慢速',40:'中速',45:'中速',60:'快速'},defSpd:'中速'},
+ en:{h2:'⚔️ Clash Royal Simplified · vs AI',you:'You',hint:'Tap a card, then tap your half to deploy!',
+  noElixir:'Not enough elixir!',ownHalf:'Troops deploy on your half only!',start:'Battle start!',again:'New round!',
+  win:'🎉 You win! Tap the arena to play again',lose:'💀 AI wins! Tap the arena to play again',draw:'🤝 Draw! Tap the arena to play again',
+  clickStart:'⚔️ Click to battle the AI',playAgain:'Tap the arena to play again',
+  ovWin:'🎉 Victory!',ovLose:'💀 Defeat!',ovDraw:'🤝 Draw!',dbl:'💧2x Elixir!',next:'Next',
+  hp:'HP',dmg:'Damage',hit:'Hit Speed',rng:'Range',spd:'Speed',anywhere:'Anywhere',ranged:'Ranged',melee:'Melee',
+  hitUnit:'s/hit',special:{giant:'Only attacks towers & buildings, ignores troops',skeletons:'Deploys 3 skeletons at once',archers:'Deploys 2 ranged units at once',
+   cannon:'Defensive building, decays and expires in 25s',fireball:'Area damage, only 40% to towers',minipekka:'Huge single-target burst'},
+  spdName:{0:'Static',30:'Slow',40:'Medium',45:'Medium',60:'Fast'},defSpd:'Medium'}
+};
+const T=k=>(L[LANG]&&L[LANG][k]!==undefined)?L[LANG][k]:L.zh[k];
+function applyLang(){
+ document.documentElement.lang=LANG;
+ document.title=LANG==='en'?'Clash Royal · Simplified':'Clash Royal · 简化版';
+ document.querySelector('h2').textContent=T('h2');
+ document.getElementById('youL').textContent=T('you');
+ renderHand();
+}
 // ===== 状态 =====
 let units=[],shots=[],fx=[];
 let elix={p:5,e:5},crowns={p:0,e:0},timer=180,over=false,started=false,winner='';
@@ -74,16 +107,15 @@ function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random
 // 卡牌悬浮提示 + 圣水充能(黑白→彩色)
 const tip=document.getElementById('tip');
 let hoverKey=null;
-const SPECIAL={giant:'只攻击建筑与塔,不会打小兵',skeletons:'一次部署 3 个小骷髅',archers:'一次部署 2 个远程单位',cannon:'防守建筑,持续掉血,25 秒后消失',fireball:'范围伤害,对塔只造成 40% 伤害',minipekka:'单体爆发伤害极高'};
-const SPD_NAME={0:'固定',30:'慢速',40:'中速',45:'中速',60:'快速'};
 function cardTipHtml(k){
  const d=CARDS[k];
- const rows=[['血量',d.type==='spell'?'—':d.hp],['伤害',d.dmg],['攻击速度',d.hit+' 秒/次'],
-  ['射程',d.type==='spell'?'全场':(d.rng>50?'远程':'近战')]];
- if(d.type!=='spell')rows.push(['移动速度',SPD_NAME[d.spd]||'中速']);
- return `<div class="th">${d.icon} ${d.name} <span style="color:#c9f">💧${d.cost}</span></div>`+
+ const rows=[[T('hp'),d.type==='spell'?'—':d.hp],[T('dmg'),d.dmg],[T('hit'),d.hit+' '+T('hitUnit')],
+  [T('rng'),d.type==='spell'?T('anywhere'):(d.rng>50?T('ranged'):T('melee'))]];
+ if(d.type!=='spell')rows.push([T('spd'),T('spdName')[d.spd]||T('defSpd')]);
+ const sp=T('special')[k];
+ return `<div class="th">${d.icon} ${N(k)} <span style="color:#c9f">💧${d.cost}</span></div>`+
   rows.map(r=>`<div class="tr"><b>${r[0]}</b><span>${r[1]}</span></div>`).join('')+
-  (SPECIAL[k]?`<div class="sp">✦ ${SPECIAL[k]}</div>`:'');
+  (sp?`<div class="sp">✦ ${sp}</div>`:'');
 }
 function showTip(el,k){
  tip.innerHTML=cardTipHtml(k);tip.style.display='block';
@@ -95,14 +127,14 @@ const handEl=document.getElementById('hand');
 function renderHand(){
  handEl.innerHTML='';
  const nx=document.createElement('div');nx.id='next';
- nx.innerHTML=`下一张<br><span class="ic">${CARDS[queue.p[0]].icon}</span>`;
+ nx.innerHTML=`${T('next')}<br><span class="ic">${CARDS[queue.p[0]].icon}</span>`;
  handEl.appendChild(nx);
  hand.p.forEach(k=>{
   const d=CARDS[k],c=document.createElement('div');
   c.className='card'+(selCard===k?' sel':'');
   const p=Math.min(1,elix.p/d.cost); // 圣水充能进度:0=黑白 1=彩色
   c.style.filter=`grayscale(${(1-p)*100}%) brightness(${.5+.5*p})`;
-  c.innerHTML=`<div class="cost">${d.cost}</div><div class="ic">${d.icon}</div><div class="nm">${d.name}</div><div class="pb"><i style="width:${p*100}%"></i></div>`;
+  c.innerHTML=`<div class="cost">${d.cost}</div><div class="ic">${d.icon}</div><div class="nm">${N(k)}</div><div class="pb"><i style="width:${p*100}%"></i></div>`;
   c.onclick=()=>{selCard=(selCard===k)?null:k;renderHand();};
   c.onmouseenter=()=>{hoverKey=k;showTip(c,k);};
   c.onmouseleave=()=>{if(hoverKey===k){hoverKey=null;tip.style.display='none';}};
@@ -131,13 +163,13 @@ function deploy(side,k,x,y){
 cv.addEventListener('pointerdown',e=>{
  const b=cv.getBoundingClientRect();
  const mx=(e.clientX-b.left)*W/b.width,my=(e.clientY-b.top)*H/b.height;
- if(over){reset();started=true;renderHand();say('新一轮开始!');return;}
- if(!started){started=true;say('战斗开始!');return;}
+ if(over){reset();started=true;renderHand();say(T('again'));return;}
+ if(!started){started=true;say(T('start'));return;}
  if(!selCard)return;
  const d=CARDS[selCard];
- if(elix.p<d.cost){say('圣水不足!');return;}
- if(d.type!=='spell'&&my<RIVER_Y+RIVER_H/2+10){say('只能部署在自己半场!');return;}
- if(d.type!=='spell'&&d.type!=='building'&&(my<H/2)){say('只能部署在自己半场!');return;}
+ if(elix.p<d.cost){say(T('noElixir'));return;}
+ if(d.type!=='spell'&&my<RIVER_Y+RIVER_H/2+10){say(T('ownHalf'));return;}
+ if(d.type!=='spell'&&d.type!=='building'&&(my<H/2)){say(T('ownHalf'));return;}
  elix.p-=d.cost;deploy('p',selCard,mx,Math.min(my,H-30));
 });
 // ===== AI =====
@@ -272,7 +304,7 @@ function endGame(w){
    w=hp('p')===hp('e')?'':(hp('p')>hp('e')?'p':'e');}
  }
  winner=w;
- say(w?(w==='p'?'🎉 你赢了!点击场地再来一局':'💀 AI 赢了!点击场地再来一局'):'🤝 平局!点击场地再来一局');
+ say(w?(w==='p'?T('win'):T('lose')):T('draw'));
 }
 // ===== 渲染 =====
 let handKey='';
@@ -281,7 +313,7 @@ function renderHUD(){
  document.getElementById('timer').textContent=`${m}:${String(s).padStart(2,'0')}`;
  document.getElementById('cp').textContent=crowns.p;
  document.getElementById('ce').textContent=crowns.e;
- document.getElementById('dexl').textContent=timer<=60?'💧圣水x2!':'';
+ document.getElementById('dexl').textContent=timer<=60?T('dbl'):'';
  const k=hand.p.join()+'|'+Math.round(elix.p*4)+'|'+(selCard||'');
  if(started&&!over&&k!==handKey){handKey=k;renderHand();}
 }
@@ -368,13 +400,17 @@ function draw(){
  // 开始/结束遮罩
  if(!started||over){
   ctx.fillStyle='#000b';ctx.fillRect(0,0,W,H);ctx.fillStyle='#fff';ctx.font='28px sans-serif';
-  ctx.fillText(!started?'⚔️ 点击开始对战 AI':(winner==='p'?'🎉 胜利!':winner==='e'?'💀 战败!':'🤝 平局!'),W/2,H/2-10);
-  ctx.font='15px sans-serif';ctx.fillText('点击场地再来一局',W/2,H/2+26);
+  ctx.fillText(!started?T('clickStart'):(winner==='p'?T('ovWin'):winner==='e'?T('ovLose'):T('ovDraw')),W/2,H/2-10);
+  ctx.font='15px sans-serif';ctx.fillText(T('playAgain'),W/2,H/2+26);
  }
 }
 let last=performance.now();
 function loop(t){const dt=Math.min(.05,(t-last)/1000);last=t;update(dt);draw();requestAnimationFrame(loop);}
-reset();renderHand();requestAnimationFrame(loop);
+reset();applyLang();say(T('hint'));requestAnimationFrame(loop);
+document.getElementById('gLang').onclick=()=>{
+ LANG=LANG==='zh'?'en':'zh';localStorage.setItem('cr_lang',LANG);applyLang();
+ if(!started)say(T('hint'));
+};
 </script>
 </body>
 </html>

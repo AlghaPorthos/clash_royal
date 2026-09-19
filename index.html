@@ -163,6 +163,7 @@ function renderAll(){
 }
 function applyLang(){
  document.documentElement.lang=lang;
+ document.title=lang==='en'?'Clash Royal · Simplified':'Clash Royal · 简化版皇室战争';
  document.querySelectorAll('[data-i18n]').forEach(e=>{e.textContent=t(e.getAttribute('data-i18n'));});
  document.getElementById('langLabel').textContent=lang==='zh'?'English':'中文';
  renderAll();
