@@ -7,101 +7,110 @@
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%}
-  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#0b111e;color:#e8eef7;
-    display:flex;align-items:center;justify-content:center;overflow:hidden}
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#e8eef7;overflow:hidden}
   a{color:inherit;text-decoration:none}
 
-  .row{display:flex;align-items:center;justify-content:center;gap:clamp(20px,4vw,64px);
-    width:100%;max-width:1400px;padding:24px}
+  .stage{position:relative;height:100%;overflow:hidden;
+    background:radial-gradient(ellipse 75% 62% at 50% 34%,#1c3257 0%,#101a30 52%,#0b111e 100%)}
+  /* 暗角,让边缘沉进黑暗 */
+  .stage::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse 82% 75% at 50% 42%,transparent 58%,#060a1488 100%)}
+  /* 地平微光 */
+  .floor{position:absolute;left:50%;bottom:19%;transform:translateX(-50%);width:min(1000px,96%);height:1px;
+    background:linear-gradient(90deg,transparent,#3a6fd866 20%,#ffd70055 50%,#d84a3a66 80%,transparent)}
 
-  /* ---- 左右海报 ---- */
-  .panel{position:relative;height:min(78vh,720px);aspect-ratio:3/4;border-radius:18px;overflow:hidden;
-    display:flex;align-items:flex-end;justify-content:center;border:1px solid #2c4a6e}
-  .blue{background:linear-gradient(180deg,#16294a 0%,#0d1a30 100%)}
-  .red{background:linear-gradient(180deg,#421c18 0%,#1c0f0d 100%)}
-  .panel img{height:86%;width:auto;object-fit:contain;filter:drop-shadow(0 16px 28px #000b)}
-  .tag{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);
-    font-size:12px;letter-spacing:3px;font-weight:bold;padding:6px 18px;border-radius:20px;
-    background:#0b111ecc;backdrop-filter:blur(4px)}
-  .blue .tag{color:#8fb8ff;border:1px solid #3a6fd866}
-  .red .tag{color:#ff9a8f;border:1px solid #d84a3a66}
+  /* ---- 角色:无边框,从画面边缘顶出来 ---- */
+  .ch{position:absolute;bottom:-7%;z-index:2;animation:bob 5s ease-in-out infinite}
+  @keyframes bob{50%{translate:0 -9px}}
+  .ch img{display:block;filter:drop-shadow(0 24px 42px #000c)}
+  .hero-l{left:-5%;height:86%}
+  .hero-r{right:-8%;height:102%;animation-delay:2.2s;scale:-1 1}
+  .hero-l img{height:86vh;max-width:none}
+  .hero-r img{height:102vh;max-width:none}
+  /* 角色身后的阵营色氛围光 */
+  .aura{position:absolute;z-index:1;border-radius:50%;filter:blur(70px);opacity:.5}
+  .aura.b{left:-12%;bottom:-8%;width:44vw;height:60vh;background:radial-gradient(closest-side,#3a6fd8,transparent 70%)}
+  .aura.r{right:-12%;bottom:-12%;width:48vw;height:66vh;background:radial-gradient(closest-side,#d84a3a,transparent 70%)}
 
-  /* ---- 中间文字 ---- */
-  .mid{flex:1;max-width:420px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:18px}
-  .kicker{font-size:11px;letter-spacing:6px;color:#7d92b8}
-  h1{font-size:clamp(38px,4.6vw,58px);font-weight:900;letter-spacing:3px;line-height:1.08;
-    background:linear-gradient(180deg,#ffe9a8,#ffd700 45%,#c87f1a);
+  /* ---- 中央文字 ---- */
+  .mid{position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);z-index:3;
+    text-align:center;width:min(560px,86vw)}
+  .kicker{font-size:11px;letter-spacing:8px;color:#7d92b8;margin-bottom:18px}
+  h1{font-size:clamp(46px,7.5vw,92px);font-weight:900;letter-spacing:4px;line-height:1.04;
+    background:linear-gradient(180deg,#ffe9a8 6%,#ffd700 44%,#b86f14 92%);
     -webkit-background-clip:text;background-clip:text;color:transparent;
-    filter:drop-shadow(0 6px 18px #ff983840)}
-  .sub{font-size:15px;letter-spacing:2px;color:#9fb4d8}
-  .vs{display:flex;align-items:center;gap:14px;width:82%;color:#ffd700;font-weight:900;font-size:20px}
+    filter:drop-shadow(0 8px 28px #ff98384d)}
+  .sub{margin-top:16px;font-size:clamp(13px,1.7vw,16px);letter-spacing:3px;color:#9fb4d8}
+  .vs{display:flex;align-items:center;gap:16px;margin:26px auto 0;width:64%;
+    color:#ffd700;font-weight:900;font-size:19px;letter-spacing:4px}
   .vs::before,.vs::after{content:"";flex:1;height:1px}
-  .vs::before{background:linear-gradient(90deg,transparent,#3a6fd8)}
-  .vs::after{background:linear-gradient(90deg,#d84a3a,transparent)}
-  .btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-  .btn{padding:13px 36px;font-size:15px;font-weight:bold;font-family:inherit;border-radius:40px;cursor:pointer;
-    border:1px solid #2c4a6e;background:#0f1a2cb3;color:#9fb4d8;transition:transform .15s,color .15s,border-color .15s}
-  .btn:hover{transform:translateY(-2px);color:#e8eef7;border-color:#ffd70066}
-  .btn.primary{background:linear-gradient(135deg,#ffd700,#ff9838);color:#1a1200;border:none;
-    box-shadow:0 10px 30px #ff983855}
-  .btn.primary:hover{box-shadow:0 14px 36px #ff983877;color:#1a1200}
-  .legal{font-size:11px;color:#42557a;line-height:1.6}
-  .legal a:hover{color:#ffd700}
-  .back{position:absolute;top:18px;left:22px;font-size:13px;color:#7d92b8}
-  .back:hover{color:#ffd700}
+  .vs::before{background:linear-gradient(90deg,transparent,#8fb8ffaa)}
+  .vs::after{background:linear-gradient(90deg,#ff9a8faa,transparent)}
+  .cta{margin-top:34px;display:flex;flex-direction:column;align-items:center;gap:14px}
+  .play{padding:15px 52px;font-size:17px;font-weight:bold;font-family:inherit;border-radius:40px;cursor:pointer;
+    background:linear-gradient(135deg,#ffd700,#ff9838);color:#1a1200;border:none;
+    box-shadow:0 12px 34px #ff983855;transition:transform .15s,box-shadow .15s}
+  .play:hover{transform:translateY(-3px);box-shadow:0 16px 44px #ff983880}
+  .home{font-size:13px;letter-spacing:2px;color:#7d92b8;transition:color .15s}
+  .home:hover{color:#ffd700}
 
-  @media(max-width:860px){
+  /* 顶栏返回 + 页脚,纯文字无边框 */
+  .back{position:absolute;top:20px;left:24px;z-index:4;font-size:13px;color:#7d92b8;transition:color .15s}
+  .back:hover{color:#ffd700}
+  .legal{position:absolute;left:0;right:0;bottom:12px;z-index:4;text-align:center;
+    font-size:10px;letter-spacing:1px;color:#3d4f70}
+  .legal a:hover{color:#ffd700}
+
+  @media(max-width:760px){
    body{overflow:auto}
-   .row{flex-direction:column;gap:16px;padding:64px 20px 32px}
-   .panel{height:44vh;width:min(78vw,340px)}
-   .mid{max-width:none}
+   .stage{height:100svh;min-height:600px}
+   .hero-l{left:-14%;height:56%;bottom:0}
+   .hero-r{right:-16%;height:66%;bottom:-4%}
+   .hero-l img{height:56vh}
+   .hero-r img{height:66vh}
+   .mid{top:46%}
   }
 </style>
 </head>
 <body>
-<a class="back" href="index.html">← <span id="backL">返回首页</span></a>
+<div class="stage">
+  <div class="aura b"></div>
+  <div class="aura r"></div>
+  <div class="floor"></div>
 
-<div class="row">
-  <section class="panel blue">
-    <img src="assets/knight.png" alt="Knight">
-    <span class="tag">KNIGHT · <span class="nm">骑士</span></span>
-  </section>
+  <div class="ch hero-l"><img src="assets/knight.png" alt="Knight"></div>
+  <div class="ch hero-r"><img src="assets/giant.png" alt="Giant"></div>
 
-  <section class="mid">
+  <div class="mid">
     <div class="kicker" id="kickerL">SIMPLIFIED EDITION</div>
     <h1>CLASH<br>ROYAL</h1>
     <p class="sub" id="subL">8 张卡牌 · 3 分钟 · 与 AI 一决高下</p>
     <div class="vs">VS</div>
-    <div class="btns">
-      <button class="btn primary" id="goBattle">⚔️ <span id="playL">开始对战</span></button>
-      <a class="btn" href="index.html">🏠 <span id="homeL">回到首页</span></a>
+    <div class="cta">
+      <button class="play" id="goBattle">⚔️ <span id="playL">开始对战</span></button>
+      <a class="home" href="index.html">← <span id="homeL">回到首页</span></a>
     </div>
-    <p class="legal">
-      <span id="legalL">素材来自 Supercell Fankit</span> ·
-      <a href="https://www.supercell.com/fan-content-policy" target="_blank" id="legal2L">非官方粉丝内容</a>
-    </p>
-  </section>
+  </div>
 
-  <section class="panel red">
-    <img src="assets/giant.png" alt="Giant">
-    <span class="tag">GIANT · <span class="nm2">巨人</span></span>
-  </section>
+  <a class="back" href="index.html">← <span id="backL">返回首页</span></a>
+  <p class="legal">
+    <span id="legalL">素材来自 Supercell Fankit</span> ·
+    <a href="https://www.supercell.com/fan-content-policy" target="_blank" id="legal2L">非官方粉丝内容</a>
+  </p>
 </div>
 
 <script>
 const lang=localStorage.getItem('cr_lang')||'zh';
 const I18N={
  zh:{back:'返回首页',sub:'8 张卡牌 · 3 分钟 · 与 AI 一决高下',play:'开始对战',home:'回到首页',
-  legal:'素材来自 Supercell Fankit',legal2:'非官方粉丝内容',nm:'骑士',nm2:'巨人',title:'Clash Royal · 海报'},
- en:{back:'Back to Home',sub:'8 CARDS · 3 MINUTES · DUEL THE AI',play:'BATTLE',home:'Home',
-  legal:'Assets from Supercell Fankit',legal2:'Unofficial fan content',nm:'Knight',nm2:'Giant',title:'Clash Royal · Poster'}
+  legal:'素材来自 Supercell Fankit',legal2:'非官方粉丝内容',title:'Clash Royal · 海报'},
+ en:{back:'Back to Home',sub:'8 CARDS · 3 MINUTES · DUEL THE AI',play:'BATTLE',home:'Back to Home',
+  legal:'Assets from Supercell Fankit',legal2:'Unofficial fan content',title:'Clash Royal · Poster'}
 };
 const t=k=>I18N[lang][k];
 document.documentElement.lang=lang;
 document.title=t('title');
 for(const id of ['backL','subL','playL','homeL','legalL','legal2L'])document.getElementById(id).textContent=t(id.slice(0,-1));
-document.querySelector('.nm').textContent=t('nm');
-document.querySelector('.nm2').textContent=t('nm2');
 goBattle.onclick=()=>location.href='game.html';
 </script>
 </body>
