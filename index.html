@@ -39,6 +39,7 @@
     transition:transform .15s,border-color .15s}
   .card:hover{transform:translateY(-4px);border-color:#ffd70088}
   .card .ic{font-size:34px}
+  .card .ic img{width:58px;height:58px;object-fit:contain;filter:drop-shadow(0 4px 8px #000a)}
   .card .nm{font-size:17px;font-weight:bold;margin:8px 0 4px}
   .card .ds{font-size:13px;color:#9fb4d8;line-height:1.6}
   .card .cost{float:right;color:#c98af0;font-weight:bold}
@@ -154,6 +155,8 @@ const I18N={
   battle:'⚔️ BATTLE!',boomHint:'Tap anywhere to skip'
  }
 };
+const CARD_IMG=['assets/skeletons.png','assets/knight.png','assets/archers_evolution.png','assets/cannon_card.png',
+ 'assets/mini_pekka.png','assets/musketeer.png','assets/fireball.png','assets/giant.png'];
 const CARDS=[
  {icon:'💀',cost:2,nm:{zh:'骷髅',en:'Skeletons'},ds:{zh:'一次部署 3 个,人海战术拉扯敌方输出',en:'Deploys 3 at once — swarm and distract the enemy'}},
  {icon:'🗡️',cost:3,nm:{zh:'骑士',en:'Knight'},ds:{zh:'血量伤害均衡的近战主力',en:'Balanced melee fighter with solid HP and damage'}},
@@ -179,8 +182,8 @@ const FEATS=[
 let lang=localStorage.getItem('cr_lang')||'zh';
 function t(k){return (I18N[lang]&&I18N[lang][k])||I18N.zh[k]||k;}
 function renderAll(){
- document.getElementById('cardGrid').innerHTML=CARDS.map(c=>
-  `<div class="card"><span class="cost">💧${c.cost}</span><div class="ic">${c.icon}</div><div class="nm">${c.nm[lang]}</div><div class="ds">${c.ds[lang]}</div></div>`).join('');
+ document.getElementById('cardGrid').innerHTML=CARDS.map((c,i)=>
+  `<div class="card"><span class="cost">💧${c.cost}</span><div class="ic"><img src="${CARD_IMG[i]}" alt="${c.nm[lang]}" loading="lazy"></div><div class="nm">${c.nm[lang]}</div><div class="ds">${c.ds[lang]}</div></div>`).join('');
  document.getElementById('stepGrid').innerHTML=STEPS.map(s=>
   `<div class="step"><span class="n">${s.n}</span><b>${s.b[lang]}</b><p>${s.p[lang]}</p></div>`).join('');
  document.getElementById('featGrid').innerHTML=FEATS.map(f=>

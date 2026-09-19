@@ -13,7 +13,9 @@
   .card{width:78px;height:96px;background:linear-gradient(#4a6,#2a4a1a);border:2px solid #89a;border-radius:10px;text-align:center;cursor:pointer;font-size:12px;position:relative;transition:transform .1s}
   .card.sel{transform:translateY(-8px);border-color:#ffd700;box-shadow:0 0 12px #ffd700}
   .card.poor{filter:grayscale(.8) brightness(.6)}
-  .card .ic{font-size:32px;margin-top:12px}
+  .card .ic{font-size:32px;margin-top:6px}
+  .card .ic img{width:48px;height:48px;object-fit:contain;filter:drop-shadow(0 3px 4px #0007)}
+  #next .ic img{width:34px;height:34px;object-fit:contain}
   .card .nm{margin-top:4px}
   .card .cost{position:absolute;top:-8px;left:-8px;background:#b05dd8;border-radius:50%;width:24px;height:24px;line-height:24px;font-weight:bold;border:2px solid #fff}
   .card .pb{position:absolute;bottom:0;left:0;right:0;height:6px;background:#0009;border-radius:0 0 8px 8px;overflow:hidden}
@@ -56,6 +58,21 @@ const CARDS={
  fireball:{name:'火球',cost:4,icon:'🔥',hp:1,dmg:300,radius:85,type:'spell'}
 };
 const DECK=['knight','archers','giant','minipekka','musketeer','skeletons','cannon','fireball'];
+// ===== 官方立绘(Supercell Fankit,assets/ 目录)=====
+const ASSET={knight:'assets/knight.png',archers:'assets/archers_evolution.png',giant:'assets/giant.png',
+ minipekka:'assets/mini_pekka.png',musketeer:'assets/musketeer.png',skeletons:'assets/skeletons.png',
+ cannon:'assets/cannon_card.png',fireball:'assets/fireball.png'};
+const IMGS={};
+for(const k in ASSET){const im=new Image();im.src=ASSET[k];IMGS[k]=im;}
+IMGS.tower_king=new Image();IMGS.tower_king.src='assets/cannoneer.png';
+IMGS.tower_princess=new Image();IMGS.tower_princess.src='assets/princess_tower_troop.png';
+function drawAsset(im,x,y,w){ // 等比绘制,底部对齐 (x,y);失败返回 false 走 emoji 兜底
+ if(im&&im.complete&&im.naturalWidth){
+  const h=w*im.naturalHeight/im.naturalWidth;
+  ctx.drawImage(im,x-w/2,y-h,w,h);return true;
+ }
+ return false;
+}
 // ===== 中英双语(与 landing 页共用 localStorage 的 cr_lang) =====
 let LANG=localStorage.getItem('cr_lang')||'zh';
 const NAME_EN={knight:'Knight',archers:'Archers',giant:'Giant',minipekka:'Mini P.E.K.K.A',musketeer:'Musketeer',skeletons:'Skeletons',cannon:'Cannon',fireball:'Fireball'};
@@ -113,7 +130,7 @@ function cardTipHtml(k){
   [T('rng'),d.type==='spell'?T('anywhere'):(d.rng>50?T('ranged'):T('melee'))]];
  if(d.type!=='spell')rows.push([T('spd'),T('spdName')[d.spd]||T('defSpd')]);
  const sp=T('special')[k];
- return `<div class="th">${d.icon} ${N(k)} <span style="color:#c9f">💧${d.cost}</span></div>`+
+ return `<div class="th"><img src="${ASSET[k]}" style="width:22px;height:22px;object-fit:contain;vertical-align:-4px"> ${N(k)} <span style="color:#c9f">💧${d.cost}</span></div>`+
   rows.map(r=>`<div class="tr"><b>${r[0]}</b><span>${r[1]}</span></div>`).join('')+
   (sp?`<div class="sp">✦ ${sp}</div>`:'');
 }
@@ -127,14 +144,14 @@ const handEl=document.getElementById('hand');
 function renderHand(){
  handEl.innerHTML='';
  const nx=document.createElement('div');nx.id='next';
- nx.innerHTML=`${T('next')}<br><span class="ic">${CARDS[queue.p[0]].icon}</span>`;
+ nx.innerHTML=`${T('next')}<br><span class="ic"><img src="${ASSET[queue.p[0]]}" alt=""></span>`;
  handEl.appendChild(nx);
  hand.p.forEach(k=>{
   const d=CARDS[k],c=document.createElement('div');
   c.className='card'+(selCard===k?' sel':'');
   const p=Math.min(1,elix.p/d.cost); // 圣水充能进度:0=黑白 1=彩色
   c.style.filter=`grayscale(${(1-p)*100}%) brightness(${.5+.5*p})`;
-  c.innerHTML=`<div class="cost">${d.cost}</div><div class="ic">${d.icon}</div><div class="nm">${N(k)}</div><div class="pb"><i style="width:${p*100}%"></i></div>`;
+  c.innerHTML=`<div class="cost">${d.cost}</div><div class="ic"><img src="${ASSET[k]}" alt="${N(k)}"></div><div class="nm">${N(k)}</div><div class="pb"><i style="width:${p*100}%"></i></div>`;
   c.onclick=()=>{selCard=(selCard===k)?null:k;renderHand();};
   c.onmouseenter=()=>{hoverKey=k;showTip(c,k);};
   c.onmouseleave=()=>{if(hoverKey===k){hoverKey=null;tip.style.display='none';}};
@@ -340,8 +357,11 @@ function draw(){
   ctx.fillRect(t.x-t.r,t.y-t.r,t.r*2,t.r*2);
   ctx.strokeStyle='#fff8';ctx.lineWidth=3;ctx.strokeRect(t.x-t.r,t.y-t.r,t.r*2,t.r*2);
   if(t.flash>0){ctx.fillStyle='#ffffff66';ctx.fillRect(t.x-t.r,t.y-t.r,t.r*2,t.r*2);}
-  ctx.fillStyle='#fff';ctx.font=(t.king?'22px':'18px')+' serif';
-  ctx.fillText(t.king?'👑':'🏹',t.x,t.y+6);
+  const tim=t.king?IMGS.tower_king:IMGS.tower_princess;
+  if(!drawAsset(tim,t.x,t.y+t.r+8,t.king?60:48)){
+   ctx.fillStyle='#fff';ctx.font=(t.king?'22px':'18px')+' serif';
+   ctx.fillText(t.king?'👑':'🏹',t.x,t.y+6);
+  }
   hpBar(t.x,t.y-t.r-12,t.r*2,t.hp/t.maxHp,t.side==='p'?'#4f4':'#f66');
  });
  // 单位(攻击突刺 + 受击闪白)
@@ -349,15 +369,19 @@ function draw(){
   const d=CARDS[u.k];
   let ox=0,oy=0;
   if(u.atk>0){const k=Math.sin((1-u.atk/.22)*Math.PI)*13;ox=(u.atkDx||0)*k;oy=(u.atkDy||0)*k;}
-  if(u.flash>0){ctx.fillStyle='#ffffff99';ctx.beginPath();ctx.arc(u.x+ox,u.y+oy,17,0,7);ctx.fill();}
-  ctx.font=(d.hp>500?'30px':'24px')+' serif';
-  ctx.save();if(u.side==='e'){ctx.translate(u.x+ox,u.y+oy);ctx.scale(-1,1);ctx.translate(-u.x-ox,-u.y-oy);}
-  ctx.fillText(d.icon,u.x+ox,u.y+oy+8);ctx.restore();
+  if(u.flash>0){ctx.fillStyle='#ffffff99';ctx.beginPath();ctx.arc(u.x+ox,u.y+oy,20,0,7);ctx.fill();}
+  const size=d.hp>800?48:d.hp>400?42:34; // 巨人/骑士大,小单位小
+  if(!drawAsset(IMGS[u.k],u.x+ox,u.y+oy+24,size)){
+   ctx.font=(d.hp>500?'30px':'24px')+' serif';
+   ctx.save();if(u.side==='e'){ctx.translate(u.x+ox,u.y+oy);ctx.scale(-1,1);ctx.translate(-u.x-ox,-u.y-oy);}
+   ctx.fillText(d.icon,u.x+ox,u.y+oy+8);ctx.restore();
+  }
   hpBar(u.x,u.y-20,30,u.hp/u.maxHp,u.side==='p'?'#4f4':'#f66');
  });
  // 抛射物(箭矢/子弹/炮弹/火球)
  shots.forEach(s=>{
-  if(s.spell){ctx.font='26px serif';ctx.fillText('🔥',s.x,s.y);
+  if(s.spell){
+   if(!drawAsset(IMGS.fireball,s.x,s.y+17,36)){ctx.font='26px serif';ctx.fillText('🔥',s.x,s.y);}
    ctx.strokeStyle='#f808';ctx.beginPath();ctx.arc(s.tx,s.ty,s.radius,0,7);ctx.stroke();return;}
   const ang=Math.atan2((s.tgt?s.tgt.y:s.ty)-s.y,(s.tgt?s.tgt.x:s.tx)-s.x);
   ctx.save();ctx.translate(s.x,s.y);ctx.rotate(ang);
