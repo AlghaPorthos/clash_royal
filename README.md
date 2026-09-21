@@ -1,4 +1,5 @@
 # ⚔️ Clash Royal · 简化版皇室战争 · Fairy Tail Edition
+https://alghaporthos.github.io/clash_royal/
 
 一个简化版的皇室战争(Clash Royale)风格游戏项目,角色换装为《妖精的尾巴》(Fairy Tail)全员。
 
